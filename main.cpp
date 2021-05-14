@@ -66,7 +66,7 @@ extern "C"{
 int main() {
     int i;
     std::cout << "Opciones: 1-7" << std::endl;
-    //mainInC(4, "3.138.109.53", "5192", "hola");
+    mainInC(4, "3.142.76.26", "5400", "ola k ase");
     chat::ChatProtocol chat;
     chat.set_ip("1");
     chat.set_username("Rodrigo");
