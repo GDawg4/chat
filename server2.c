@@ -138,7 +138,7 @@ int check_is_name_available_in_clients(char *name){
 	pthread_mutex_lock(&clients_mutex);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
-			printf("Client %i Name %s \n",i, clients[i]->name );
+			printf("Client %d Name %s \n",i, clients[i]->name );
 			if(strcmp(clients[i]->name ,name)==0){
 				return 0;
 			}
