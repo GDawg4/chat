@@ -66,9 +66,13 @@ void client_menu_handler() {
 	  int choice;
 
 		printf("Menu\n\n");
-		printf("1. Sum\n");
-		printf("2. Rest\n");
-		printf("3. Exit\n");
+		printf("1. Chatear contodos losusuarios(broadcasting).\n");
+		printf("2. Enviar y recibir mensajes directos, privados,apartedel chat general.\n");
+		printf("3. Cambiar de status.\n");
+		printf("4. Listar los usuarios conectados al sistema de chat.\n");
+		printf("5. Desplegar información de un usuario en particular.\n");
+		printf("6. Ayuda.\n");
+		printf("7. Salir.\n");
 		scanf("%d",&choice);
 		
 		switch (choice)
@@ -79,6 +83,10 @@ void client_menu_handler() {
 				break;
 			case 3: printf("3\n"); 
 				break;
+			case 7: 
+        printf("Gracias por usar el chat!\n"); 
+				catch_ctrl_c_and_exit(2);
+        break;
 			default: printf("Wrong Choice. Enter again\n");
 							break;
 		}  
