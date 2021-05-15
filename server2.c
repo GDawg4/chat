@@ -11,7 +11,7 @@
 #include <signal.h>
 
 #define MAX_CLIENTS 100
-#define BUFFER_SZ 2048
+#define BUFFER_SZ 2048*12
 
 static _Atomic unsigned int cli_count = 0;
 static int uid = 10;
