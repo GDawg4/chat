@@ -82,7 +82,7 @@ void queue_remove(int uid){
 }
 
 /* Send message to all clients except sender */
-void send_message(char *s, int uid){
+void broadcast_message(char *s, int uid){
 	pthread_mutex_lock(&clients_mutex);
 
 	for(int i=0; i<MAX_CLIENTS; ++i){
@@ -98,6 +98,41 @@ void send_message(char *s, int uid){
 
 	pthread_mutex_unlock(&clients_mutex);
 }
+
+/* Send private message*/
+void send_private_message(char *s, int uidSender, int uidReceiver){
+	pthread_mutex_lock(&clients_mutex);
+	for(int i=0; i<MAX_CLIENTS; ++i){
+		if(clients[i]){
+			if(clients[i]->uid == uidReceiver){
+				if(write(clients[i]->sockfd, s, strlen(s)) < 0){
+					perror("ERROR: write to descriptor failed");
+					break;
+				}
+			}
+		}
+	}
+
+	pthread_mutex_unlock(&clients_mutex);
+}
+
+/* Return response a user*/
+void return_response_to_sender(char *s, int uid){
+	pthread_mutex_lock(&clients_mutex);
+	for(int i=0; i<MAX_CLIENTS; ++i){
+		if(clients[i]){
+			if(clients[i]->uid == uid){
+				if(write(clients[i]->sockfd, s, strlen(s)) < 0){
+					perror("ERROR: write to descriptor failed");
+					break;
+				}
+			}
+		}
+	}
+
+	pthread_mutex_unlock(&clients_mutex);
+}
+
 
 /* Handle all communication with the client */
 void *handle_client(void *arg){
@@ -116,7 +151,7 @@ void *handle_client(void *arg){
 		strcpy(cli->name, name);
 		sprintf(buff_out, "%s has joined\n", cli->name);
 		printf("%s", buff_out);
-		send_message(buff_out, cli->uid);
+		broadcast_message(buff_out, cli->uid);
 	}
 
 	bzero(buff_out, BUFFER_SZ);
@@ -129,15 +164,20 @@ void *handle_client(void *arg){
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0){
 			if(strlen(buff_out) > 0){
-				send_message(buff_out, cli->uid);
-
-				str_trim_lf(buff_out, strlen(buff_out));
-				printf("%s -> %s\n", buff_out, cli->name);
+				if(buff_out=="1"){
+					return_response_to_sender("HI",cli->uid);
+					printf("%s -> %s\n", buff_out, cli->name);
+				}else{
+					broadcast_message(buff_out, cli->uid);
+					str_trim_lf(buff_out, strlen(buff_out));
+					printf("%s -> %s\n", buff_out, cli->name);
+				}
+				
 			}
 		} else if (receive == 0 || strcmp(buff_out, "exit") == 0){
 			sprintf(buff_out, "%s has left\n", cli->name);
 			printf("%s", buff_out);
-			send_message(buff_out, cli->uid);
+			broadcast_message(buff_out, cli->uid);
 			leave_flag = 1;
 		} else {
 			printf("ERROR: -1\n");
