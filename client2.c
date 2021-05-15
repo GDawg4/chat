@@ -64,14 +64,13 @@ void broadcast_message() {
 
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
-  //fgets(message, LENGTH, stdin);
   scanf("%s", &message);
   str_trim_lf(message, LENGTH);
 
   if (strcmp(message, "exit") == 0) {
     return;
   } else {
-    sprintf(buffer, "%s: %s\n", name, message);
+    sprintf(buffer, "%s\n", message);
     send(sockfd, buffer, strlen(buffer), 0);
   }
 
