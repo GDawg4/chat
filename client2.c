@@ -62,7 +62,7 @@ void client_menu_handler() {
   char message[LENGTH] = {};
 	char buffer[LENGTH + 32] = {};
 
-  while(1) {
+  while(flag == 0) {
 	  int choice;
 
 		printf("Menu\n\n");
@@ -77,11 +77,23 @@ void client_menu_handler() {
 		
 		switch (choice)
 		{
-			case 1: printf("1\n");
+			case 1: 
+        printf("1\n");
 				break;
-			case 2: printf("2\n");
+			case 2: 
+        printf("2\n");
 				break;
-			case 3: printf("3\n"); 
+			case 3: 
+        printf("3\n"); 
+				break;
+      case 4: 
+        printf("4\n"); 
+				break;
+      case 5: 
+        printf("5\n"); 
+				break;
+      case 6: 
+        printf("6\n"); 
 				break;
 			case 7: 
         printf("Gracias por usar el chat!\n"); 
