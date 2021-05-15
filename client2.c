@@ -58,6 +58,26 @@ void send_msg_handler() {
   catch_ctrl_c_and_exit(2);
 }
 
+void broadcast_message() {
+  char message[LENGTH] = {};
+	char buffer[LENGTH + 32] = {};
+
+  printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
+  str_overwrite_stdout();
+  fgets(message, LENGTH, stdin);
+  str_trim_lf(message, LENGTH);
+
+  if (strcmp(message, "exit") == 0) {
+    return;
+  } else {
+    sprintf(buffer, "%s: %s\n", name, message);
+    send(sockfd, buffer, strlen(buffer), 0);
+  }
+
+  bzero(message, LENGTH);
+  bzero(buffer, LENGTH + 32);
+}
+
 void client_menu_handler() {
   char message[LENGTH] = {};
 	char buffer[LENGTH + 32] = {};
@@ -78,20 +98,7 @@ void client_menu_handler() {
 		switch (choice)
 		{
 			case 1: 
-        printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
-        str_overwrite_stdout();
-        fgets(message, LENGTH, stdin);
-        str_trim_lf(message, LENGTH);
-
-        if (strcmp(message, "exit") == 0) {
-          break;
-        } else {
-          sprintf(buffer, "%s: %s\n", name, message);
-          send(sockfd, buffer, strlen(buffer), 0);
-        }
-
-        bzero(message, LENGTH);
-        bzero(buffer, LENGTH + 32);
+        broadcast_message();
 				break;
 			case 2: 
         printf("2\n");
