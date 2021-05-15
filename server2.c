@@ -139,7 +139,7 @@ int check_is_name_available_in_clients(char *name){
 	printf("Name %s \n", name);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
-			printf("Client Name %s \n", clients[i]->name );
+			printf("Client Name %d \n", i);
 			if(strcmp(clients[i]->name ,name)==0){
 				return 0;
 			}
