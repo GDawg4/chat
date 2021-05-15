@@ -185,7 +185,7 @@ int main(int argc, char **argv){
 	printf("=== WELCOME TO THE CHATROOM ===\n");
 
 	pthread_t send_msg_thread;
-  if(pthread_create(&send_msg_thread, NULL, (void *) client_menu_handler, NULL) != 0){
+  if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
 		printf("ERROR: pthread\n");
     return EXIT_FAILURE;
 	}
