@@ -138,6 +138,7 @@ int check_is_name_available_in_clients(char *name){
 	pthread_mutex_lock(&clients_mutex);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
+			printf("Client %i Name %s \n",i, clients[i]->name );
 			if(strcmp(clients[i]->name ,name)==0){
 				return 0;
 			}
@@ -161,6 +162,7 @@ void *handle_client(void *arg){
 		printf("Didn't enter the name.\n");
 		leave_flag = 1;
 	} else{
+		printf("Name %s \n", name);
 		if(check_is_name_available_in_clients(name)){
 			strcpy(cli->name, name);
 			sprintf(buff_out, "%s has joined\n", cli->name);
