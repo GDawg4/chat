@@ -166,7 +166,7 @@ void *handle_client(void *arg){
 		if (receive > 0){
 			if(strlen(buff_out) > 0){
 				// printf("AFUERA");
-				// str_trim_lf(buff_out, strlen(buff_out));
+				str_trim_lf(buff_out, strlen(buff_out));
 				printf("%s AFUERA\n",buff_out);
 				if(strcmp(buff_out, "hola") == 0){
 					printf("Hey");
