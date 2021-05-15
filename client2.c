@@ -58,6 +58,47 @@ void send_msg_handler() {
   catch_ctrl_c_and_exit(2);
 }
 
+void client_menu_handler() {
+  char message[LENGTH] = {};
+	char buffer[LENGTH + 32] = {};
+
+  while(1) {
+	  int choice;
+
+		printf("Menu\n\n");
+		printf("1. Sum\n");
+		printf("2. Rest\n");
+		printf("3. Exit\n");
+		scanf("%d",&choice);
+		
+		switch (choice)
+		{
+			1: printf("1\n");
+				break;
+			2: printf("2\n");
+				break;
+			3: printf("3\n"); 
+				break;
+			default: printf("Wrong Choice. Enter again\n");
+							break;
+		}  
+  	// str_overwrite_stdout();
+    // fgets(message, LENGTH, stdin);
+    // str_trim_lf(message, LENGTH);
+
+    // if (strcmp(message, "exit") == 0) {
+	// 		break;
+    // } else {
+    //   sprintf(buffer, "%s: %s\n", name, message);
+    //   send(sockfd, buffer, strlen(buffer), 0);
+    // }
+
+	// 	bzero(message, LENGTH);
+    // bzero(buffer, LENGTH + 32);
+  }
+  catch_ctrl_c_and_exit(2);
+}
+
 void recv_msg_handler() {
 	char message[LENGTH] = {};
   while (1) {
@@ -124,7 +165,7 @@ int main(int argc, char **argv){
 	printf("=== WELCOME TO THE CHATROOM ===\n");
 
 	pthread_t send_msg_thread;
-  if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
+  if(pthread_create(&send_msg_thread, NULL, (void *) client_menu_handler, NULL) != 0){
 		printf("ERROR: pthread\n");
     return EXIT_FAILURE;
 	}
