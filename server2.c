@@ -142,13 +142,15 @@ int check_is_name_available_in_clients(char *name, int uid){
 			if(clients[i]->uid != uid){
 				printf("Client Name %d \n", clients[i]->name );
 				if(strcmp(clients[i]->name ,name)==0){
+					pthread_mutex_unlock(&clients_mutex);
 					return 0;
 				}
 			}
 		}
 	}
-	return 1;
 	pthread_mutex_unlock(&clients_mutex);
+	return 1;
+	
 }
 
 /* Handle all communication with the client */
