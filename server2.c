@@ -118,6 +118,7 @@ void send_private_message(char *s, int uidSender, int uidReceiver){
 
 /* Return response a user*/
 void return_response_to_sender(char *s, int uid){
+		printf("Hey2");
 	pthread_mutex_lock(&clients_mutex);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
@@ -164,9 +165,14 @@ void *handle_client(void *arg){
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0){
 			if(strlen(buff_out) > 0){
-				if(buff_out=="1"){
+				// printf("AFUERA");
+				// str_trim_lf(buff_out, strlen(buff_out));
+				printf("%s AFUERA\n",buff_out);
+				if(strcmp(buff_out, "hola") == 0){
+					printf("Hey");
+					
 					return_response_to_sender("HI",cli->uid);
-					printf("%s -> %s\n", buff_out, cli->name);
+					// printf("%s -> %s\n", buff_out, cli->name);
 				}else{
 					broadcast_message(buff_out, cli->uid);
 					str_trim_lf(buff_out, strlen(buff_out));
