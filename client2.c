@@ -58,6 +58,67 @@ void send_msg_handler() {
   catch_ctrl_c_and_exit(2);
 }
 
+void client_menu_handler() {
+  char message[LENGTH] = {};
+	char buffer[LENGTH + 32] = {};
+
+  while(flag == 0) {
+	  int choice;
+
+		printf("Menu\n\n");
+		printf("1. Chatear contodos losusuarios(broadcasting).\n");
+		printf("2. Enviar y recibir mensajes directos, privados,apartedel chat general.\n");
+		printf("3. Cambiar de status.\n");
+		printf("4. Listar los usuarios conectados al sistema de chat.\n");
+		printf("5. Desplegar información de un usuario en particular.\n");
+		printf("6. Ayuda.\n");
+		printf("7. Salir.\n");
+		scanf("%d",&choice);
+		
+		switch (choice)
+		{
+			case 1: 
+        printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
+        str_overwrite_stdout();
+        fgets(message, LENGTH, stdin);
+        str_trim_lf(message, LENGTH);
+
+        if (strcmp(message, "exit") == 0) {
+          break;
+        } else {
+          sprintf(buffer, "%s: %s\n", name, message);
+          send(sockfd, buffer, strlen(buffer), 0);
+        }
+
+        bzero(message, LENGTH);
+        bzero(buffer, LENGTH + 32);
+				break;
+			case 2: 
+        printf("2\n");
+				break;
+			case 3: 
+        printf("3\n"); 
+				break;
+      case 4: 
+        printf("4\n"); 
+				break;
+      case 5: 
+        printf("5\n"); 
+				break;
+      case 6: 
+        printf("6\n"); 
+				break;
+			case 7: 
+        printf("Gracias por usar el chat!\n"); 
+				catch_ctrl_c_and_exit(2);
+        break;
+			default: printf("Wrong Choice. Enter again\n");
+							break;
+		}  
+  }
+  catch_ctrl_c_and_exit(2);
+}
+
 void recv_msg_handler() {
 	char message[LENGTH] = {};
   while (1) {
