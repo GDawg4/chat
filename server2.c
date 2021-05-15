@@ -134,6 +134,18 @@ void return_response_to_sender(char *s, int uid){
 	pthread_mutex_unlock(&clients_mutex);
 }
 
+int check_is_name_available_in_clients(char *name){
+	pthread_mutex_lock(&clients_mutex);
+	for(int i=0; i<MAX_CLIENTS; ++i){
+		if(clients[i]){
+			if(strcmp(clients[i]->name ,name)==0){
+				return 0;
+			}
+		}
+	}
+	return 1;
+	pthread_mutex_unlock(&clients_mutex);
+}
 
 /* Handle all communication with the client */
 void *handle_client(void *arg){
@@ -149,10 +161,17 @@ void *handle_client(void *arg){
 		printf("Didn't enter the name.\n");
 		leave_flag = 1;
 	} else{
-		strcpy(cli->name, name);
-		sprintf(buff_out, "%s has joined\n", cli->name);
-		printf("%s", buff_out);
-		broadcast_message(buff_out, cli->uid);
+		if(check_is_name_available_in_clients(name)){
+			strcpy(cli->name, name);
+			sprintf(buff_out, "%s has joined\n", cli->name);
+			printf("%s", buff_out);
+			broadcast_message(buff_out, cli->uid);
+		}else{
+			leave_flag = 1;
+			printf("Client name already exists.\n");
+			return_response_to_sender("Client name already exists.",cli->uid);
+		}
+		
 	}
 
 	bzero(buff_out, BUFFER_SZ);
