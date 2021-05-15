@@ -73,11 +73,11 @@ void client_menu_handler() {
 		
 		switch (choice)
 		{
-			1: printf("1\n");
+			case 1: printf("1\n");
 				break;
-			2: printf("2\n");
+			case 2: printf("2\n");
 				break;
-			3: printf("3\n"); 
+			case 3: printf("3\n"); 
 				break;
 			default: printf("Wrong Choice. Enter again\n");
 							break;
