@@ -63,7 +63,7 @@ void broadcast_message() {
 	char buffer[LENGTH + 32] = {};
 
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
-  str_overwrite_stdout();
+  //str_overwrite_stdout();
   fgets(message, LENGTH, stdin);
   str_trim_lf(message, LENGTH);
 
@@ -79,7 +79,7 @@ void broadcast_message() {
 }
 
 void client_menu_handler() {
-  
+
   while(flag == 0) {
 	  int choice;
 
