@@ -165,8 +165,9 @@ void *handle_client(void *arg){
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0){
 			if(strlen(buff_out) > 0){
-				str_trim_lf(buff_out, strlen(buff_out));
-				if(strcmp(buff_out, "1") == 0){
+				printf('AFUERA');
+				printf('%s',buff_out);
+				if(strcmp(buff_out, "hola") == 0){
 					printf("Hey");
 					
 					return_response_to_sender("HI",cli->uid);
