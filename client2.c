@@ -79,9 +79,7 @@ void broadcast_message() {
 }
 
 void client_menu_handler() {
-  char message[LENGTH] = {};
-	char buffer[LENGTH + 32] = {};
-
+  
   while(flag == 0) {
 	  int choice;
 
