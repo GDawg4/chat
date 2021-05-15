@@ -134,14 +134,16 @@ void return_response_to_sender(char *s, int uid){
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-int check_is_name_available_in_clients(char *name){
+int check_is_name_available_in_clients(char *name, int uid){
 	pthread_mutex_lock(&clients_mutex);
 	printf("Name %s \n", name);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
-			printf("Client Name %d \n", i);
-			if(strcmp(clients[i]->name ,name)==0){
-				return 0;
+			if(clients[i]->uid != uid){
+				printf("Client Name %d \n", clients[i]->name );
+				if(strcmp(clients[i]->name ,name)==0){
+					return 0;
+				}
 			}
 		}
 	}
@@ -164,7 +166,7 @@ void *handle_client(void *arg){
 		leave_flag = 1;
 	} else{
 		
-		if(check_is_name_available_in_clients(name)){
+		if(check_is_name_available_in_clients(name,cli->uid)){
 			strcpy(cli->name, name);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
