@@ -222,16 +222,21 @@ void *handle_client(void *arg){
 					// display the message's fields.
 					printf("Received: a=%s",msg->message);  // required field
 					 // handle optional field
-					 printf("  b=%s",msg->sender);
-					printf("  b=%s",msg->recipient);
+					printf("  b=%s",msg->sender);
+					printf("  b=%s",);
 					printf("  c=%s",msg->sender);
 					printf("\n");
-
+					if(strcmp(msg->recipient, "everyone") == 0){
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
+						printf("Chat General %s -> %s\n", msg->sender, msg->message);
+						broadcast_message(buff_out2, cli->uid);
+					}
 					// Free the unpacked message
 					chat__message_communication__free_unpacked(msg, NULL);
 					
-					broadcast_message(buff_out, cli->uid);
-					printf("%s -> %s\n", buff_out, cli->name);
+					
+					
 				}
 				
 			}
@@ -246,6 +251,7 @@ void *handle_client(void *arg){
 		}
 
 		bzero(buff_out, BUFFER_SZ);
+		free(buff_out2);
 	}
 
   /* Delete client from queue and yield thread */
