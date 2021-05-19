@@ -213,7 +213,6 @@ void *handle_client(void *arg){
 					int a = (cli_ptn->option);
 					printf("Options %d\n", a);
 					printf("Options2 %d\n", &a);
-					printf("Options2 %d\n", *a);
 					msg = cli_ptn->messagecommunication;
 			
 					
