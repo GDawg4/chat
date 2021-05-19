@@ -9,6 +9,9 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <signal.h>
+#include "new.pb-c.h"
+#define MAX_MSG_SIZE 1024
+// #include "amessage.pb-c.h"
 
 #define MAX_CLIENTS 100
 #define BUFFER_SZ 2048*12
@@ -136,11 +139,11 @@ void return_response_to_sender(char *s, int uid){
 
 int check_is_name_available_in_clients(char *name, int uid){
 	pthread_mutex_lock(&clients_mutex);
-	//revisar IP
+	printf("Name %s \n", name);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
 			if(clients[i]->uid != uid){
-				
+				printf("Client Name %d \n", clients[i]->name );
 				if(strcmp(clients[i]->name ,name)==0){
 					pthread_mutex_unlock(&clients_mutex);
 					return 0;
@@ -180,8 +183,8 @@ void *handle_client(void *arg){
 		}
 		
 	}
-
-	bzero(buff_out, BUFFER_SZ);
+	
+	//bzero(buff_out, BUFFER_SZ);
 
 	while(1){
 		if (leave_flag) {
@@ -191,8 +194,9 @@ void *handle_client(void *arg){
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0){
 			if(strlen(buff_out) > 0){
+				printf("%s\n", buff_out);
 				
-				str_trim_lf(buff_out, strlen(buff_out));
+				//str_trim_lf(buff_out, strlen(buff_out));
 				
 				if(strcmp(buff_out, "hola") == 0){
 					printf("Hey");
@@ -200,8 +204,32 @@ void *handle_client(void *arg){
 					return_response_to_sender("HI",cli->uid);
 					// printf("%s -> %s\n", buff_out, cli->name);
 				}else{
-					broadcast_message(buff_out, cli->uid);
+					printf("%s\n", buff_out);
+					// Deber ser client petition
+					Chat__MessageCommunication *msg;
+
+					// Read packed message from standard-input.
+					// Unpack the message using protobuf-c.
+					printf("%s\n", buff_out);
+					printf("%d\n", strlen(buff_out));
+					msg = chat__message_communication__unpack(NULL, 16, buff_out);	
+					if (msg == NULL)
+					{
+						fprintf(stderr, "error unpacking incoming message\n");
+						exit(1);
+					}
+
+					// display the message's fields.
+					printf("Received: a=%s",msg->message);  // required field
+					 // handle optional field
+					printf("  b=%s",msg->recipient);
+					printf("  c=%s",msg->sender);
+					printf("\n");
+
+					// Free the unpacked message
+					chat__message_communication__free_unpacked(msg, NULL);
 					
+					broadcast_message(buff_out, cli->uid);
 					printf("%s -> %s\n", buff_out, cli->name);
 				}
 				

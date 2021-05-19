@@ -9,12 +9,14 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <netdb.h>
+#include "new.pb-c.h"
+// #include "amessage.pb-c.h"
+#define MAX_MSG_SIZE 1024
 
 #define LENGTH 2048
 
 // Global variables
 volatile sig_atomic_t flag = 0;
-
 int sockfd = 0;
 char name[32];
 struct hostent * host;
@@ -67,13 +69,32 @@ void broadcast_message() {
   str_overwrite_stdout();
   scanf("%s", &message);
   str_trim_lf(message, LENGTH);
+  
+  
+  Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+  void *buf;                     // Buffer to store serialized data
+  unsigned len;                  // Length of serialized data
+  printf("%s\n", message);
+  msg.message = message;
+  msg.recipient = "everyone";
+  len = chat__message_communication__get_packed_size(&msg);
+  
+  buf = malloc(len);
+  chat__message_communication__pack(&msg,buf);
+  
+  fprintf(stderr,"Writing %d serialized bytes\n",len); // See the length of message
+  fwrite(buf,strlen(buf),1,stdout); // Write to stdout to allow direct command line piping
+  
+
 
   if (strcmp(message, "exit") == 0) {
     return;
   } else {
     sprintf(buffer, "%s\n", message);
-    send(sockfd, buffer, strlen(buffer), 0);
+    send(sockfd, buf, len, 0);
   }
+  
+free(buf); // Free the allocated serialized buffer
 
   bzero(message, LENGTH);
   bzero(buffer, LENGTH + 32);
