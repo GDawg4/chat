@@ -203,15 +203,15 @@ void *handle_client(void *arg){
 				}else{
 					
 					// Deber ser client petition
-					Chat__ClientPetition *cli_ptn;
-					Chat__MessageCommunication *msg;
+					Chat__ClientPetition *cli_ptn = CHAT__CLIENT_PETITION__INIT;
+					Chat__MessageCommunication *msg = CHAT__MESSAGE_COMMUNICATION__INIT;
 
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
 					
 					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);	
 					
-					printf("Options %d\n", atoi(cli_ptn->option));
+					printf("Options %d\n", cli_ptn->option);
 					msg = cli_ptn->messagecommunication;
 			
 					
