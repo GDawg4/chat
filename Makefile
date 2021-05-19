@@ -1,5 +1,5 @@
 compile:
-	# sudo protoc --c_out=. new.proto
+	sudo protoc --c_out=. new.proto
 
 	# gcc -Wall -g3 -fsanitize=address -pthread -lprotobuf server3.c -o server3
 	# gcc -Wall -g3 -fsanitize=address -pthread -lprotobuf client3.c -o client3
