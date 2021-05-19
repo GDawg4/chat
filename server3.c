@@ -220,7 +220,7 @@ void *handle_client(void *arg){
 
 					
 					printf("\n");
-					printf("Opcion %d\n", cli_ptn->option);
+					// printf("Opcion %d\n", cli_ptn->option);
 					if(strcmp(msg->recipient, "everyone") == 0){
 						char buff_out2[BUFFER_SZ];
 						sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
