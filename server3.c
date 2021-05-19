@@ -14,7 +14,7 @@
 // #include "amessage.pb-c.h"
 
 #define MAX_CLIENTS 100
-#define BUFFER_SZ 2048*12
+#define BUFFER_SZ 2048*24
 
 static _Atomic unsigned int cli_count = 0;
 static int uid = 10;
@@ -203,8 +203,8 @@ void *handle_client(void *arg){
 				}else{
 					
 					// Deber ser client petition
-					Chat__ClientPetition *cli_ptn = CHAT__CLIENT_PETITION__INIT;
-					Chat__MessageCommunication *msg = CHAT__MESSAGE_COMMUNICATION__INIT;
+					Chat__ClientPetition *cli_ptn;
+					Chat__MessageCommunication *msg;
 
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
