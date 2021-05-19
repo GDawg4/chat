@@ -231,7 +231,6 @@ void *handle_client(void *arg){
 						sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
 						printf("Chat General %s -> %s\n", msg->sender, msg->message);
 						broadcast_message(buff_out2, cli->uid);
-						free(buff_out2);
 					}
 					// Free the unpacked message
 					chat__message_communication__free_unpacked(msg, NULL);
