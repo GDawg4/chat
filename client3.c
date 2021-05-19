@@ -80,7 +80,7 @@ void broadcast_message() {
   msg.sender = name;
  
   cli_ptn.messagecommunication = &msg;
-  cli_ptn.option = 2;
+  cli_ptn.option = atoi(2);
   //  len = chat__message_communication__get_packed_size(&msg);
   // buf = malloc(len);
   // chat__message_communication__pack(&msg,buf);
