@@ -210,9 +210,9 @@ void *handle_client(void *arg){
 
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
-					printf("%s\n", buff_out);
-					printf("%d\n", strlen(buff_out));
-					msg = chat__message_communication__unpack(NULL, 16, buff_out);	
+					// printf("%s\n", buff_out);
+					// printf("%d\n", strlen(buff_out));
+					msg = chat__message_communication__unpack(NULL, strlen(buff_out), buff_out);	
 					if (msg == NULL)
 					{
 						fprintf(stderr, "error unpacking incoming message\n");
@@ -222,6 +222,7 @@ void *handle_client(void *arg){
 					// display the message's fields.
 					printf("Received: a=%s",msg->message);  // required field
 					 // handle optional field
+					 printf("  b=%s",msg->sender);
 					printf("  b=%s",msg->recipient);
 					printf("  c=%s",msg->sender);
 					printf("\n");

@@ -77,6 +77,7 @@ void broadcast_message() {
   printf("%s\n", message);
   msg.message = message;
   msg.recipient = "everyone";
+  msg.sender = name;
   len = chat__message_communication__get_packed_size(&msg);
   
   buf = malloc(len);
@@ -90,11 +91,11 @@ void broadcast_message() {
   if (strcmp(message, "exit") == 0) {
     return;
   } else {
-    sprintf(buffer, "%s\n", message);
+    // sprintf(buffer, "%s\n", message);
     send(sockfd, buf, len, 0);
   }
   
-free(buf); // Free the allocated serialized buffer
+  free(buf); // Free the allocated serialized buffer
 
   bzero(message, LENGTH);
   bzero(buffer, LENGTH + 32);
