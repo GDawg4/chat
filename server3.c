@@ -211,6 +211,7 @@ void *handle_client(void *arg){
 					printf("%s\n", buff_out);
 					printf("%s\n", cli_ptn->messagecommunication);
 					printf("%d\n", strlen(cli_ptn->messagecommunication));
+					printf("%d\n", cli_ptn->option);
 					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);	
 					msg = chat__message_communication__unpack(NULL, strlen(cli_ptn->messagecommunication), cli_ptn->messagecommunication);	
 					if (msg == NULL)
