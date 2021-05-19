@@ -133,7 +133,7 @@ struct  _Chat__ClientPetition
 {
   ProtobufCMessage base;
   protobuf_c_boolean has_option;
-  int32_t option;
+  int32_t *option;
   Chat__UserRegistration *registration;
   Chat__UserRequest *users;
   Chat__ChangeStatus *change;
