@@ -57,7 +57,6 @@ void print_client_addr(struct sockaddr_in addr){
 /* Add clients to queue */
 void queue_add(client_t *cl){
 	pthread_mutex_lock(&clients_mutex);
-	printf("QUE ONDA AAQUI EN ADD");
 	for(int i=0; i < MAX_CLIENTS; ++i){
 		if(!clients[i]){
 			clients[i] = cl;
@@ -204,26 +203,24 @@ void *handle_client(void *arg){
 				}else{
 					printf("%s\n", buff_out);
 					// Deber ser client petition
+					Chat__ClientPetition *cli_ptn;
 					Chat__MessageCommunication *msg;
 
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
 					printf("%s\n", buff_out);
 					printf("%d\n", strlen(buff_out));
-					msg = chat__message_communication__unpack(NULL, strlen(buff_out), buff_out);	
+					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);	
+					msg = chat__message_communication__unpack(NULL, strlen(cli_ptn->messagecommunication), cli_ptn->messagecommunication);	
 					if (msg == NULL)
 					{
 						fprintf(stderr, "error unpacking incoming message\n");
 						exit(1);
 					}
 
-					// display the message's fields.
-					// printf("Received: a=%s",msg->message);  // required field
-					//  // handle optional field
-					// printf("  b=%s",msg->sender);
-					// printf("  b=%s",);
-					// printf("  c=%s",msg->sender);
+					
 					printf("\n");
+					printf("Opcion %d\n", cli_ptn->option);
 					if(strcmp(msg->recipient, "everyone") == 0){
 						char buff_out2[BUFFER_SZ];
 						sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
