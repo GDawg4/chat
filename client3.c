@@ -74,13 +74,13 @@ void broadcast_message() {
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
   unsigned len;                  // Length of serialized data
-  printf("%s\n", message);
-  msg.message = message;
-  msg.recipient = "everyone";
-  msg.sender = name;
+  // printf("%s\n", message);
+  // msg.message = message;
+  // msg.recipient = "everyone";
+  // msg.sender = name;
  
   cli_ptn.messagecommunication = &msg;
-  // cli_ptn.option=1;
+  
   //  len = chat__message_communication__get_packed_size(&msg);
   // buf = malloc(len);
   // chat__message_communication__pack(&msg,buf);
