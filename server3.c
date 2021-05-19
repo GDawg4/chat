@@ -57,7 +57,7 @@ void print_client_addr(struct sockaddr_in addr){
 /* Add clients to queue */
 void queue_add(client_t *cl){
 	pthread_mutex_lock(&clients_mutex);
-
+	printf("QUE ONDA AAQUI EN ADD");
 	for(int i=0; i < MAX_CLIENTS; ++i){
 		if(!clients[i]){
 			clients[i] = cl;
@@ -139,11 +139,9 @@ void return_response_to_sender(char *s, int uid){
 
 int check_is_name_available_in_clients(char *name, int uid){
 	pthread_mutex_lock(&clients_mutex);
-	printf("Name %s \n", name);
 	for(int i=0; i<MAX_CLIENTS; ++i){
 		if(clients[i]){
-			if(clients[i]->uid != uid){
-				printf("Client Name %d \n", clients[i]->name );
+			if(clients[i]->uid != uid){	
 				if(strcmp(clients[i]->name ,name)==0){
 					pthread_mutex_unlock(&clients_mutex);
 					return 0;
