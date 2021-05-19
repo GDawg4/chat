@@ -79,7 +79,7 @@ void broadcast_message() {
   msg.recipient = "everyone";
   msg.sender = name;
  
-  cli_ptn.messagecommunication = msg;
+  cli_ptn.messagecommunication = &msg;
   cli_ptn.option=1;
   //  len = chat__message_communication__get_packed_size(&msg);
   // buf = malloc(len);
