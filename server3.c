@@ -210,8 +210,8 @@ void *handle_client(void *arg){
 
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
-					// printf("%s\n", buff_out);
-					// printf("%d\n", strlen(buff_out));
+					printf("%s\n", buff_out);
+					printf("%d\n", strlen(buff_out));
 					msg = chat__message_communication__unpack(NULL, strlen(buff_out), buff_out);	
 					if (msg == NULL)
 					{
