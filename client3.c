@@ -81,7 +81,7 @@ void broadcast_message() {
  
   cli_ptn.messagecommunication = &msg;
   cli_ptn.option = 2;
-  printf("Options %d\n", (cli_ptn->option));
+  printf("Options %d\n", (cli_ptn.option));
   //  len = chat__message_communication__get_packed_size(&msg);
   // buf = malloc(len);
   // chat__message_communication__pack(&msg,buf);
