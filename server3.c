@@ -191,7 +191,7 @@ void *handle_client(void *arg){
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0){
 			if(strlen(buff_out) > 0){
-				printf("%s\n", buff_out);
+				
 				
 				//str_trim_lf(buff_out, strlen(buff_out));
 				
@@ -201,7 +201,7 @@ void *handle_client(void *arg){
 					return_response_to_sender("HI",cli->uid);
 					// printf("%s -> %s\n", buff_out, cli->name);
 				}else{
-					printf("%s\n", buff_out);
+					
 					// Deber ser client petition
 					Chat__ClientPetition *cli_ptn;
 					Chat__MessageCommunication *msg;
@@ -209,7 +209,8 @@ void *handle_client(void *arg){
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
 					printf("%s\n", buff_out);
-					printf("%d\n", strlen(buff_out));
+					printf("%s\n", cli_ptn->messagecommunication);
+					printf("%d\n", strlen(cli_ptn->messagecommunication));
 					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);	
 					msg = chat__message_communication__unpack(NULL, strlen(cli_ptn->messagecommunication), cli_ptn->messagecommunication);	
 					if (msg == NULL)
