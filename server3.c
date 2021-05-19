@@ -210,8 +210,10 @@ void *handle_client(void *arg){
 					// Unpack the message using protobuf-c.
 					
 					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);	
-					
-					printf("Options %d\n", (cli_ptn->option));
+					int a = (cli_ptn->option);
+					printf("Options %d\n", a);
+					printf("Options2 %d\n", &a);
+					printf("Options2 %d\n", *a);
 					msg = cli_ptn->messagecommunication;
 			
 					
