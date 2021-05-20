@@ -516,9 +516,10 @@ int main(int argc, char **argv)
 
 	while (1)
 	{
+		printf("Aqui");
 		socklen_t clilen = sizeof(cli_addr);
 		connfd = accept(listenfd, (struct sockaddr *)&cli_addr, &clilen);
-		printf("Aqui");
+		printf("Aqui2");
 		/* Check if max clients is reached */
 		if ((cli_count + 1) == MAX_CLIENTS)
 		{
