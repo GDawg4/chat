@@ -64,10 +64,12 @@ void send_msg_handler() {
 void broadcast_message() {
   char message[LENGTH] = {};
 	char buffer[LENGTH + 32] = {};
-
+  char temp;
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
+  scanf("%c",&temp);
   str_overwrite_stdout();
-  scanf("%s", &message);
+  // fgets(message, LENGTH, stdin);
+  scanf("%[^\n]", &message);
   // str_trim_lf(message, LENGTH);
   
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
