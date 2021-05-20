@@ -64,8 +64,8 @@ void print_client_addr(struct sockaddr_in addr)
 /* Add clients to queue */
 void queue_add(client_t *cl)
 {
-	cl->status = 'activo';
 	pthread_mutex_lock(&clients_mutex);
+	cl->status = "activo";
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (!clients[i])
@@ -141,7 +141,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
 
-				if (send(sockfd, buf, len, 0)) < 0)
+				if (send(clients[i]->sockfd, buf, len, 0)) < 0)
 					{
 						sendFailureServerResponse("Error sending broadcast message.", client_sender);
 						break;
