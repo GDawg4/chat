@@ -67,14 +67,15 @@ void str_trim_lf(char *arr, int length)
 
 /* Add clients to queue */
 void queue_add(client_t *cl)
-{
+{	
+	strcpy(cli->status, "activo");
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (!clients[i])
 		{
 			clients[i] = cl;
-			clients[i]->status = 'activo';
+			
 			break;
 		}
 	}
