@@ -128,6 +128,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 	{
 		if (clients[i])
 		{
+			printf("LLego aqui");
 			if (clients[i]->uid != client_sender->uid)
 			{
 				printf("LLego aqui");
