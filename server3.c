@@ -255,7 +255,7 @@ void *handle_client(void *arg)
 					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 					int option = (cli_ptn->option);
 
-					switch (choice)
+					switch (option)
 					{
 					case 1:
 						// broadcast_message();
