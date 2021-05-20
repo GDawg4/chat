@@ -446,7 +446,7 @@ void *handle_client(void *arg)
 
 					Chat__ClientPetition *cli_ptn;
 					Chat__MessageCommunication *msg;
-					
+					char buff_out2[BUFFER_SZ];
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
 
@@ -463,11 +463,11 @@ void *handle_client(void *arg)
 					
 						break;
 					case 3:
-						// printf("Opcion 2\n");
 					
-						char buff_out[BUFFER_SZ];
-						sprintf(buff_out, "Hola a todos\n");
-						broadcast_message(buff_out,cli);
+					
+						
+						sprintf(buff_out2, "Hola a todos\n");
+						broadcast_message(buff_out2,cli);
 						
 						break;
 					case 4:
