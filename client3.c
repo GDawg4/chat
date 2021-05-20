@@ -77,7 +77,7 @@ void broadcast_message() {
   void *buf;                     // Buffer to store serialized data
   unsigned len;                  // Length of serialized data
   // printf("%s\n", message);
-  msg.message = "hola como estas";
+  msg.message = message;
   msg.recipient = "everyone";
   msg.sender = name;
  
