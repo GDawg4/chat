@@ -67,7 +67,7 @@ void str_trim_lf(char *arr, int length)
 
 /* Add clients to queue */
 void queue_add(client_t *cl)
-{	
+{
 	strcpy(cl->status, "activo");
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -75,7 +75,7 @@ void queue_add(client_t *cl)
 		if (!clients[i])
 		{
 			clients[i] = cl;
-			
+
 			break;
 		}
 	}
@@ -208,31 +208,82 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-/* Change User Status*/
-void change_user_status(client_t *client , char *status , char *username)
+
+/* Get User Information Request*/
+void get_user_information_request(client_t *client, char *username)
 {
-	
+
 	pthread_mutex_lock(&clients_mutex);
-	
+	if(strcmp('everyone',username)==0){
+		sendFailureServerResponse('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n',client,5);
+	}
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
 		{
 			if (strcmp(clients[i]->name, username) == 0)
 			{
+
 				
+
+				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+				void *buf; // Buffer to store serialized data
+				unsigned len;
+				srv_res.option = 5;
+				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
+				
+				char ip[BUFFER_SZ];
+				sprintf(ip, "%d.%d.%d.%d",
+					clients[i]->address.sin_addr.s_addr & 0xff,
+					(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+					(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+				//Set user info
+				user_info.status = clients[i]->status;
+				user_info.username = clients[i]->name;
+				user_info.ip = ip;
+				srv_res.userinforesponse = &user_info;
+				srv_res.code = 200;
+				len = chat__server_response__get_packed_size(&srv_res);
+				buf = malloc(len);
+				chat__server_response__pack(&srv_res, buf);
+				send(client, buf, len, 0)
+				pthread_mutex_unlock(&clients_mutex);
+				free(buf);
+				return;
+				
+			}
+		}
+	}
+
+	pthread_mutex_unlock(&clients_mutex);
+
+	sendFailureServerResponse("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
+}
+/* Change User Status*/
+void change_user_status(client_t *client, char *status, char *username)
+{
+
+	pthread_mutex_lock(&clients_mutex);
+
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
+			if (strcmp(clients[i]->name, username) == 0)
+			{
+
 				strcpy(clients[i]->status, status);
 
 				pthread_mutex_unlock(&clients_mutex);
-				sendSuccessServerResponse("Status changed succesfully.",client,3);
+				sendSuccessServerResponse("Status changed succesfully.", client, 3);
 				pthread_mutex_lock(&clients_mutex);
-
 
 				//send message to everyone that someone changed status
 				char buff_out2[BUFFER_SZ];
 				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
 				printf("Chat General %s has changed to status %s\n", username, status);
-				
+
 				pthread_mutex_unlock(&clients_mutex);
 				broadcast_message(buff_out2, client);
 				pthread_mutex_lock(&clients_mutex);
@@ -241,8 +292,6 @@ void change_user_status(client_t *client , char *status , char *username)
 			}
 		}
 	}
-
-	
 
 	pthread_mutex_unlock(&clients_mutex);
 	sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
@@ -315,7 +364,7 @@ void return_response_to_sender(char *s, int uid)
 }
 
 int check_is_name_available_in_clients(char *name, int uid)
-{
+{	
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -402,8 +451,15 @@ void *handle_client(void *arg)
 		sendFailureServerResponse("Name must be between 2 and 32 characters.\n", cli, 1);
 		leave_flag = 1;
 	}
+	
 	else
 	{
+		
+		if (strcmp(name,'everyone')==0)
+		{
+			sendFailureServerResponse("El nombre everyone se encuentra reservado. Utiliza otro nombre.\n", cli, 1);
+			leave_flag = 1;
+		}
 
 		if (check_is_name_available_in_clients(user->username, cli->uid) == 0)
 		{
@@ -442,85 +498,59 @@ void *handle_client(void *arg)
 
 				//str_trim_lf(buff_out, strlen(buff_out));
 
-				if (strcmp(buff_out, "hola") == 0)
+				Chat__ClientPetition *cli_ptn;
+				Chat__MessageCommunication *msg;
+				Chat__UserRequest *user_request;
+				// Read packed message from standard-input.
+				// Unpack the message using protobuf-c.
+
+				cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
+				int option = (cli_ptn->option);
+
+				switch (option)
 				{
-					printf("Hey");
+				case 1:
+					// broadcast_message();
+					break;
+				case 2:
 
-					return_response_to_sender("HI", cli->uid);
-					// printf("%s -> %s\n", buff_out, cli->name);
-				}
-				else
-				{
+					break;
+				case 3:
+					change_user_status(cli, cli_ptn->change->status, cli_ptn->change->username);
+					break;
+				case 4:
 
-					Chat__ClientPetition *cli_ptn;
-					Chat__MessageCommunication *msg;
-					// Read packed message from standard-input.
-					// Unpack the message using protobuf-c.
-
-					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
-					int option = (cli_ptn->option);
-
-					switch (option)
+					msg = cli_ptn->messagecommunication;
+					if (msg == NULL)
 					{
-					case 1:
-						// broadcast_message();
-						break;
-					case 2:
-						
-					
-						break;
-					case 3:
-					
-					
-						
-						printf("Client s %s\n", cli_ptn->change->status);
-						printf("Client u %s\n", cli_ptn->change->username);
-						
-						change_user_status(cli,cli_ptn->change->status,cli_ptn->change->username);
-
-						break;
-					case 4:
-
-						msg = cli_ptn->messagecommunication;
-						if (msg == NULL)
-						{
-							fprintf(stderr, "Error message received was null\n");
-							break;
-						}
-
-						// printf("\n");
-						if (strcmp(msg->recipient, "everyone") == 0)
-						{
-
-							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "%s\n", msg->message);
-							printf("Chat General %s -> %s\n", msg->sender, msg->message);
-							broadcast_message(buff_out2, cli);
-						}
-						else
-						{
-							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "%s\n", msg->message);
-
-							send_private_message(buff_out2, cli, msg->recipient);
-						}
-						// Free the unpacked message
-						chat__message_communication__free_unpacked(msg, NULL);
-						break;
-					case 5:
-						printf("5\n");
-						break;
-					case 6:
-						printf("6\n");
-						break;
-					case 7:
-						printf("Gracias por usar el chat!\n");
-
-						break;
-					default:
-						printf("Wrong Choice. Enter again\n");
+						fprintf(stderr, "Error message received was null\n");
 						break;
 					}
+
+					// printf("\n");
+					if (strcmp(msg->recipient, "everyone") == 0)
+					{
+
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "%s\n", msg->message);
+						printf("Chat General %s -> %s\n", msg->sender, msg->message);
+						broadcast_message(buff_out2, cli);
+					}
+					else
+					{
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "%s\n", msg->message);
+
+						send_private_message(buff_out2, cli, msg->recipient);
+					}
+					// Free the unpacked message
+					chat__message_communication__free_unpacked(msg, NULL);
+					break;
+				case 5:
+					get_user_information_request(cli, cli_ptn->users->user);
+					break;
+				default:
+					break;
 				}
 			}
 		}

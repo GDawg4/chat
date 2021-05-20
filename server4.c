@@ -51,14 +51,14 @@ void str_trim_lf(char *arr, int length)
 	}
 }
 
-char* get_ip(struct sockaddr_in addr)
-{	
+char *get_ip(struct sockaddr_in addr)
+{
 	char ip;
-	sprintf(ip,"%d.%d.%d.%d",
-		   addr.sin_addr.s_addr & 0xff,
-		   (addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+	sprintf(ip, "%d.%d.%d.%d",
+			addr.sin_addr.s_addr & 0xff,
+			(addr.sin_addr.s_addr & 0xff00) >> 8,
+			(addr.sin_addr.s_addr & 0xff0000) >> 16,
+			(addr.sin_addr.s_addr & 0xff000000) >> 24);
 	return ip;
 }
 
@@ -130,10 +130,10 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
-		{		
+		{
 			if (clients[i]->uid != client_sender->uid)
 			{
-			
+
 				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 				void *buf; // Buffer to store serialized data
 				unsigned len;
@@ -146,13 +146,13 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
-			
+
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
-					{
-						sendFailureServerResponse("Error sending broadcast message.", client_sender,0);
-						break;
-					}
-				
+				{
+					sendFailureServerResponse("Error sending broadcast message.", client_sender, 0);
+					break;
+				}
+
 				free(buf);
 			}
 		}
@@ -189,7 +189,8 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 
 	srv_res.code = 500;
 	srv_res.servermessage = failure_message;
-	if(option!=0){
+	if (option != 0)
+	{
 		srv_res.option = option;
 	}
 	len = chat__server_response__get_packed_size(&srv_res);
@@ -206,7 +207,7 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 	{
 		if (clients[i])
 		{
-			if (strcmp(clients[i]->name,receiverName)==0)
+			if (strcmp(clients[i]->name, receiverName) == 0)
 			{
 				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 				void *buf; // Buffer to store serialized data
@@ -220,13 +221,13 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
-			
+
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
-					{
-						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
-						break;
-					}
-				
+				{
+					// sendFailureServerResponse("Error sending broadcast message.", client_sender);
+					break;
+				}
+
 				free(buf);
 			}
 		}
@@ -282,18 +283,16 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 {
 	pthread_mutex_lock(&clients_mutex);
 
-	
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
-		{	
-			
-			if (clients[i]->uid != uid && strcmp(get_ip(clients[i]->address),get_ip(addr))==0)
+		{
+
+			if (clients[i]->uid != uid && strcmp(get_ip(clients[i]->address), get_ip(addr)) == 0)
 			{
-				
-					pthread_mutex_unlock(&clients_mutex);
-					return 0;
-				
+
+				pthread_mutex_unlock(&clients_mutex);
+				return 0;
 			}
 		}
 	}
@@ -310,39 +309,41 @@ void *handle_client(void *arg)
 
 	cli_count++;
 	client_t *cli = (client_t *)arg;
-	
+
 	int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 	Chat__ClientPetition *cli_ptn_register;
 	Chat__UserRegistration *user;
 	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 	int optionRegister = (cli_ptn_register->option);
-	
+
 	printf("Name %s\n", user->username);
 	printf("optionRegister %d\n", optionRegister);
 	printf("IP %s\n", user->ip);
-	if(optionRegister==1){
-		sendFailureServerResponse("User registration was expected.\n",cli,1);
+	if (optionRegister == 1)
+	{
+		sendFailureServerResponse("User registration was expected.\n", cli, 1);
 		leave_flag = 1;
 	}
 	if (receive <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1)
 	{
-		sendFailureServerResponse("Name must be between 2 and 32 characters.\n",cli,1);
+		sendFailureServerResponse("Name must be between 2 and 32 characters.\n", cli, 1);
 		leave_flag = 1;
 	}
 	else
 	{
 
-		if (check_is_name_available_in_clients(name, cli->uid)==0)
+		if (check_is_name_available_in_clients(name, cli->uid) == 0)
 		{
 			leave_flag = 1;
-			sendFailureServerResponse("Client name already exists. Use a different name\n",cli,1);
+			sendFailureServerResponse("Client name already exists. Use a different name\n", cli, 1);
 		}
-		if (check_is_ip_available_in_clients(cli->uid, cli->address)==0)
+		if (check_is_ip_available_in_clients(cli->uid, cli->address) == 0)
 		{
 			leave_flag = 1;
-			sendFailureServerResponse("Client IP already exists. Unable to connect\n",cli,1);
+			sendFailureServerResponse("Client IP already exists. Unable to connect\n", cli, 1);
 		}
-		if(leave_flag==0){
+		if (leave_flag == 0)
+		{
 			strcpy(cli->name, name);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
@@ -367,77 +368,68 @@ void *handle_client(void *arg)
 
 				//str_trim_lf(buff_out, strlen(buff_out));
 
-				if (strcmp(buff_out, "hola") == 0)
+				Chat__ClientPetition *cli_ptn;
+				Chat__MessageCommunication *msg;
+				Chat__UserRequest *user_request;
+
+				// Read packed message from standard-input.
+				// Unpack the message using protobuf-c.
+
+				cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
+				int option = (cli_ptn->option);
+
+				switch (option)
 				{
-					printf("Hey");
+				case 1:
+					// broadcast_message();
+					break;
+				case 2:
+					printf("2\n");
+					break;
+				case 3:
+					printf("3\n");
+					break;
+				case 4:
 
-					return_response_to_sender("HI", cli->uid);
-					// printf("%s -> %s\n", buff_out, cli->name);
-				}
-				else
-				{
-
-					Chat__ClientPetition *cli_ptn;
-					Chat__MessageCommunication *msg;
-
-					// Read packed message from standard-input.
-					// Unpack the message using protobuf-c.
-
-					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
-					int option = (cli_ptn->option);
-
-					switch (option)
+					msg = cli_ptn->messagecommunication;
+					if (msg == NULL)
 					{
-					case 1:
-						// broadcast_message();
-						break;
-					case 2:
-						printf("2\n");
-						break;
-					case 3:
-						printf("3\n");
-						break;
-					case 4:
-						
-						msg = cli_ptn->messagecommunication;
-						if (msg == NULL)
-						{
-							fprintf(stderr, "Error message received was null\n");
-							exit(1);
-						}
-
-						// printf("\n");
-						if (strcmp(msg->recipient, "everyone") == 0)
-						{	
-
-							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "%s\n", msg->message);
-							printf("Chat General %s -> %s\n", msg->sender, msg->message);
-							broadcast_message(buff_out2, cli);
-						}else{
-							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "%s\n", msg->message);
-							printf("Chat Privado %s hacia %s -> %s\n", msg->sender,msg->recipient, msg->message);
-							send_private_message(buff_out2, cli,msg->recipient);
-						}
-						// Free the unpacked message
-						chat__message_communication__free_unpacked(msg, NULL);
-						break;
-					case 5:
-						printf("5\n");
-						break;
-					case 6:
-						printf("6\n");
-						break;
-					case 7:
-						printf("Gracias por usar el chat!\n");
-						
-						break;
-					default:
-						printf("Wrong Choice. Enter again\n");
-						break;
+						fprintf(stderr, "Error message received was null\n");
+						exit(1);
 					}
-					
+
+					// printf("\n");
+					if (strcmp(msg->recipient, "everyone") == 0)
+					{
+
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "%s\n", msg->message);
+						printf("Chat General %s -> %s\n", msg->sender, msg->message);
+						broadcast_message(buff_out2, cli);
+					}
+					else
+					{
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "%s\n", msg->message);
+						printf("Chat Privado %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
+						send_private_message(buff_out2, cli, msg->recipient);
+					}
+					// Free the unpacked message
+					chat__message_communication__free_unpacked(msg, NULL);
+					break;
+				case 5:
+					printf("5\n");
+					break;
+				case 6:
+					printf("6\n");
+					break;
+				case 7:
+					printf("Gracias por usar el chat!\n");
+
+					break;
+				default:
+					printf("Wrong Choice. Enter again\n");
+					break;
 				}
 			}
 		}
@@ -475,7 +467,6 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	
 	int port = atoi(argv[1]);
 	int option = 1;
 	int listenfd = 0, connfd = 0;
@@ -537,7 +528,7 @@ int main(int argc, char **argv)
 
 		/* Add client to the queue and fork thread */
 		queue_add(cli);
-		
+
 		pthread_create(&tid, NULL, &handle_client, (void *)cli);
 
 		/* Reduce CPU usage */
