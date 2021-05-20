@@ -44,9 +44,9 @@ void str_trim_lf(char *arr, int length)
 	int i;
 	for (i = 0; i < length; i++)
 	{ // trim \n
-		if (arr[i] == "\n")
+		if (arr[i] == '\n')
 		{
-			arr[i] = " ";
+			arr[i] = ' ';
 			//   break;
 		}
 	}
@@ -212,31 +212,6 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 void change_status()
 {
 	printf("FUCK");
-	// printf("status ad %s",status);
-	// pthread_mutex_lock(&clients_mutex);
-	
-	// for (int i = 0; i < MAX_CLIENTS; ++i)
-	// {
-	// 	if (clients[i])
-	// 	{
-	// 		if (strcmp(clients[i]->name, username) == 0)
-	// 		{
-				
-				
-	// 			strcpy(clients[i]->status, status);
-	// 			sendSuccessServerResponse("Status changed succesfully.",client,3);
-	// 			//send message to everyone that someone changed status
-	// 			char buff_out2[BUFFER_SZ];
-	// 			sprintf(buff_out2, "%s has changed to status %s\n", username, status);
-	// 			printf("Chat General %s has changed to status %s\n", username, status);
-	// 			broadcast_message(buff_out2, client);
-				
-
-	// 		}
-	// 	}
-	// }
-	// pthread_mutex_unlock(&clients_mutex);
-	// sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
 
 }
 
@@ -464,11 +439,12 @@ void *handle_client(void *arg)
 					case 3:
 					
 					
+						change_status();
 						
 						printf("Client s %s\n", cli_ptn->change->status);
 						printf("Client u %s\n", cli_ptn->change->username);
 						
-						change_status();
+
 						break;
 					case 4:
 
