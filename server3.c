@@ -324,14 +324,13 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 /* Handle all communication with the client */
 void *handle_client(void *arg)
 {
-	printf("aqui2");
+	
 	char buff_out[BUFFER_SZ];
 	char name[32];
 	int leave_flag = 0;
 
 	cli_count++;
 	client_t *cli = (client_t *)arg;
-	printf("aqui3");
 	// int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 	if (recv(cli->sockfd, buff_out, BUFFER_SZ, 0) <= 0)
 	{
@@ -342,9 +341,9 @@ void *handle_client(void *arg)
 	Chat__ClientPetition *cli_ptn_register;
 	Chat__UserRegistration *user;
 	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
-	// int optionRegister = (cli_ptn_register->option);
-	// printf("BUF OUT %s\n",buff_out);
-	printf("aqui");
+	int optionRegister = (cli_ptn_register->option);
+
+	printf("Option %d\n",optionRegister);
 	// printf("Name %s\n", user->username);
 	// printf("optionRegister %d\n", optionRegister);
 	// printf("IP %s\n", user->ip);
