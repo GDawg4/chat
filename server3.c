@@ -212,6 +212,7 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 void change_user_status(client_t *client , char *status , char *username)
 {
 	pthread_mutex_lock(&clients_mutex);
+	printf("FUCK");
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
@@ -459,6 +460,7 @@ void *handle_client(void *arg)
 						printf("2\n");
 						break;
 					case 3:
+						printf("Opcion 3\n");
 						user_status = cli_ptn->change;
 						change_user_status(cli,user_status->status,user_status->username);
 						break;
