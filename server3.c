@@ -161,7 +161,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 		}
 	}
 	pthread_mutex_unlock(&clients_mutex);
-	// sendSuccessServerResponse("Message sent succesfully", client_sender,0);
+	sendSuccessServerResponse("Message sent succesfully", client_sender,0);
 }
 
 void sendSuccessServerResponse(char *succces_message, client_t *client_sender, int option)
