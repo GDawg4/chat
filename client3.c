@@ -199,7 +199,7 @@ void change_status()
     cli_ptn.option = 3;
     cli_ptn.change = &new_status;
     printf("New Status %s\n",cli_ptn.change->status);
-    printf("New Name %s\n",cli_ptn.change->name);
+    printf("New Name %s\n",cli_ptn.change->username);
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
