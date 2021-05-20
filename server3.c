@@ -464,11 +464,11 @@ void *handle_client(void *arg)
 					case 3:
 						printf("Opcion 33\n");
 						
-						char status[BUFFER_SZ];
-						sprintf(status, "%s", cli_ptn->change->status);
-						char username[BUFFER_SZ];
-						sprintf(username, "%s", cli_ptn->change->username);
-						change_user_status(cli,status,username);
+						// char status[BUFFER_SZ];
+						// sprintf(status, "%s", cli_ptn->change->status);
+						// char username[BUFFER_SZ];
+						// sprintf(username, "%s", cli_ptn->change->username);
+						change_user_status(cli,"inactivo","Silvio");
 						break;
 					case 4:
 
