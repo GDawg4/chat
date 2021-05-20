@@ -158,10 +158,10 @@ void private_message()
 }
 
 
-void private_message()
+void change_status()
 {
     int choice_status;
-    char status[LENGTH];
+    char *status;
     char buffer[LENGTH + 32] = {};
     char temp;
     scanf("%c", &temp);
@@ -189,7 +189,7 @@ void private_message()
     }
 
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
-    Chat__ChangeStatus new_status = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+    Chat__ChangeStatus new_status = CHAT__CHANGE_STATUS__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;              
 
@@ -197,7 +197,7 @@ void private_message()
     new_status.username = name;
 
     cli_ptn.option = 3;
-    cli_ptn.change = new_status;
+    cli_ptn.change = &new_status;
 
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
@@ -207,7 +207,6 @@ void private_message()
 
     free(buf); // Free the allocated serialized buffer
 
-    bzero(status, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
