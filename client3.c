@@ -189,7 +189,7 @@ void private_message()
     }
 
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
-    Chat__ChangeStatus new_status = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+    Chat__ChangeStatus new_status = CHAT__CHANGE_STATUS__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;              
 
