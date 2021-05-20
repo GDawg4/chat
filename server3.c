@@ -209,7 +209,7 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 }
 
 /* Change User Status*/
-void change_user_status(client_t client , char status , char *username)
+void change_user_status(client_t *client , char *status , char *username)
 {
 	printf("FUCK\n");
 	
