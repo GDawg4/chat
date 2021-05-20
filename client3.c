@@ -222,7 +222,7 @@ void recv_msg_handler()
 
             //Get Response Code
             int code = server_res->code;
-            printf('Message: %d\n',server_res->servermessage);
+            printf('Message: %s\n',server_res->servermessage);
             printf('Code: %d\n',code);
             // if (code == 200)
             // {
