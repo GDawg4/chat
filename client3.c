@@ -220,51 +220,57 @@ void recv_msg_handler()
 
             server_res = chat__server_response__unpack(NULL, strlen(receive), receive);
 
-            //Get Response Code
-            int code = server_res->code;
-            if (code == 200)
+            if (server_res->has_code)
             {
-                //Get Response Option
-                int option = (server_res->option);
-                switch (option)
+                //Get Response Code
+                int code = server_res->code;
+                if (code == 200)
                 {
-                //User Register Response
-                case 1:
-                    broadcast_message();
-                    break;
-                //Connected User Response
-                case 2:
-                    private_message();
-                    break;
-                //Change Status Response
-                case 3:
-                    printf("3\n");
-                    break;
-                //Messages Response
-                case 4:
-                    msg = server_res->messagecommunication;
-                    if (strcmp(msg->recipient, "everyone") == 0)
+                    if (server_res->has_option)
                     {
-                        printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
+                        //Get Response Option
+                        int option = (server_res->option);
+                        switch (option)
+                        {
+                        //User Register Response
+                        case 1:
+                            broadcast_message();
+                            break;
+                        //Connected User Response
+                        case 2:
+                            private_message();
+                            break;
+                        //Change Status Response
+                        case 3:
+                            printf("3\n");
+                            break;
+                        //Messages Response
+                        case 4:
+                            msg = server_res->messagecommunication;
+                            if (strcmp(msg->recipient, "everyone") == 0)
+                            {
+                                printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
+                            }
+                            else
+                            {
+                                printf("Chat Privado recibido de %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
+                            }
+                            break;
+                        //User Information Response
+                        case 5:
+                            printf("5\n");
+                            break;
+                        default:
+                            break;
+                        }
                     }
-                    else
-                    {
-                        printf("Chat Privado recibido de %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
-                    }
-                    break;
-                //User Information Response
-                case 5:
-                    printf("5\n");
-                    break;
-                default:
-                    break;
                 }
-            }
-            else if (code == 500)
-            {
-                //Print Error Message
-                printf("%s", server_res->servermessage);
-                str_overwrite_stdout();
+                else if (code == 500)
+                {
+                    //Print Error Message
+                    printf("%s", server_res->servermessage);
+                    str_overwrite_stdout();
+                }
             }
         }
         else if (receive == 0)
