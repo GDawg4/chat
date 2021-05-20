@@ -97,7 +97,30 @@ void queue_remove(int uid)
 }
 
 /* Send message to all clients except sender */
-void broadcast_message(char *s, int uid)
+// void broadcast_message(char *s, int uid)
+// {
+// 	pthread_mutex_lock(&clients_mutex);
+
+// 	for (int i = 0; i < MAX_CLIENTS; ++i)
+// 	{
+// 		if (clients[i])
+// 		{
+// 			if (clients[i]->uid != uid)
+// 			{
+// 				if (write(clients[i]->sockfd, s, strlen(s)) < 0)
+// 				{
+// 					perror("ERROR: write to descriptor failed");
+// 					break;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	pthread_mutex_unlock(&clients_mutex);
+// }
+
+/* Send message to all clients except sender */
+void broadcast_message(char *msg_string, client_t *client_sender)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -105,20 +128,71 @@ void broadcast_message(char *s, int uid)
 	{
 		if (clients[i])
 		{
-			if (clients[i]->uid != uid)
+			if (clients[i]->uid != client_sender->uid)
 			{
-				if (write(clients[i]->sockfd, s, strlen(s)) < 0)
-				{
-					perror("ERROR: write to descriptor failed");
-					break;
-				}
+				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+				void *buf; // Buffer to store serialized data
+				unsigned len;
+				srv_res.option = 4;
+				Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+				msg.message = msg_string;
+				msg.recipient = "everyone";
+				msg.sender = client_sender->name;
+				srv_res.messagecommunication = &msg;
+				len = chat__server_response__get_packed_size(&srv_res);
+				buf = malloc(len);
+				chat__server_response__pack(&srv_res, buf);
+
+				if (send(clients[i]->sockfd, buf, len, 0) < 0)
+					{
+						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						break;
+					}else{
+						printf("Chat General %s -> %s\n", msg->sender, msg->message);
+					}
+				free(buf);
 			}
 		}
 	}
+	pthread_mutex_unlock(&clients_mutex);
+	// sendSuccessServerResponse("Message sent succesfully", client_sender);
+}
 
+void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+	void *buf;	  // Buffer to store serialized data
+	unsigned len; // Length of serialized data
+
+	srv_res.code = 200;
+	srv_res.servermessage = succces_message;
+
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(client_sender->sockfd, buf, len, 0);
 	pthread_mutex_unlock(&clients_mutex);
 }
 
+void sendFailureServerResponse(char *failure_message, client_t *client_sender)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+	void *buf;	  // Buffer to store serialized data
+	unsigned len; // Length of serialized data
+
+	srv_res.code = 500;
+	srv_res.servermessage = failure_message;
+
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(client_sender->sockfd, buf, len, 0);
+	pthread_mutex_unlock(&clients_mutex);
+}
 /* Send private message*/
 void send_private_message(char *s, int uidSender, char *receiverName)
 {
@@ -209,7 +283,7 @@ void *handle_client(void *arg)
 			strcpy(cli->name, name);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
-			broadcast_message(buff_out, cli->uid);
+			broadcast_message(buff_out, cli);
 		}
 		else
 		{
@@ -280,8 +354,8 @@ void *handle_client(void *arg)
 						{	
 							char buff_out2[BUFFER_SZ];
 							sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
-							printf("Chat General %s -> %s\n", msg->sender, msg->message);
-							broadcast_message(buff_out2, cli->uid);
+							
+							broadcast_message(buff_out2, cli);
 						}else{
 							char buff_out2[BUFFER_SZ];
 							sprintf(buff_out2, "Chat privado %s -> %s\n", msg->sender, msg->message);
@@ -313,7 +387,7 @@ void *handle_client(void *arg)
 		{
 			sprintf(buff_out, "%s has left\n", cli->name);
 			printf("%s", buff_out);
-			broadcast_message(buff_out, cli->uid);
+			broadcast_message(buff_out, cli);
 			leave_flag = 1;
 		}
 		else
