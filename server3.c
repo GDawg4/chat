@@ -152,7 +152,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 			
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
-						sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						sendFailureServerResponse("Error sending broadcast message.", client_sender,0);
 						break;
 					}
 				
@@ -161,10 +161,10 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 		}
 	}
 	pthread_mutex_unlock(&clients_mutex);
-	sendSuccessServerResponse("Message sent succesfully", client_sender);
+	// sendSuccessServerResponse("Message sent succesfully", client_sender,0);
 }
 
-void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
+void sendSuccessServerResponse(char *succces_message, client_t *client_sender, int option)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -174,7 +174,9 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
 
 	srv_res.code = 200;
 	srv_res.servermessage = succces_message;
-
+	if(option!=0){
+		srv_res.option=option;
+	}
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
 	chat__server_response__pack(&srv_res, buf);
@@ -182,7 +184,7 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-void sendFailureServerResponse(char *failure_message, client_t *client_sender)
+void sendFailureServerResponse(char *failure_message, client_t *client_sender, int option)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -192,7 +194,9 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender)
 
 	srv_res.code = 500;
 	srv_res.servermessage = failure_message;
-
+	if(option!=0){
+		srv_res.option = option;
+	}
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
 	chat__server_response__pack(&srv_res, buf);
@@ -275,6 +279,44 @@ int check_is_name_available_in_clients(char *name, int uid)
 			}
 		}
 	}
+	pthread_mutex_unlock(&clients_mutex);
+	return 1;
+}
+
+
+
+int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	char ip1[BUFFER_SZ];
+			sprintf(ip1,"%d.%d.%d.%d",
+			addr.sin_addr.s_addr & 0xff,
+			(addr.sin_addr.s_addr & 0xff00) >> 8,
+			(addr.sin_addr.s_addr & 0xff0000) >> 16,
+			(addr.sin_addr.s_addr & 0xff000000) >> 24);
+			
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{	
+			char ip2[BUFFER_SZ];
+			sprintf(ip2,"%d.%d.%d.%d",
+			clients[i]->address.sin_addr.s_addr & 0xff,
+			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+			if (clients[i]->uid != uid && strcmp(ip1,ip2))==0)
+			{
+				
+					pthread_mutex_unlock(&clients_mutex);
+					return 0;
+				
+			}
+			bzero(ip2, BUFFER_SZ);
+		}
+	}
+	bzero(ip1, BUFFER_SZ);
 	pthread_mutex_unlock(&clients_mutex);
 	return 1;
 }
@@ -493,19 +535,9 @@ int main(int argc, char **argv)
 		}
 
 		/* Client settings */
-		// char *ip = get_ip(cli_addr);
-		printf("IP AFUERA %d.%d.%d.%d\n",
-		   cli_addr.sin_addr.s_addr & 0xff,
-		   (cli_addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (cli_addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (cli_addr.sin_addr.s_addr & 0xff000000) >> 24);
-		char ip[BUFFER_SZ];
-		sprintf(ip,"IP fff %d.%d.%d.%d",
-		   cli_addr.sin_addr.s_addr & 0xff,
-		   (cli_addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (cli_addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (cli_addr.sin_addr.s_addr & 0xff000000) >> 24);
-		printf("IP %s\n",ip);
+		
+	
+		
 		client_t *cli = (client_t *)malloc(sizeof(client_t));
 		cli->address = cli_addr;
 		cli->sockfd = connfd;

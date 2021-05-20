@@ -162,7 +162,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 	// sendSuccessServerResponse("Message sent succesfully", client_sender);
 }
 
-void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
+void sendSuccessServerResponse(char *succces_message, client_t *client_sender, int option)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -172,7 +172,9 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
 
 	srv_res.code = 200;
 	srv_res.servermessage = succces_message;
-
+	if(option!=0){
+		srv_res.option=option;
+	}
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
 	chat__server_response__pack(&srv_res, buf);
