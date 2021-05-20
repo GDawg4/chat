@@ -169,7 +169,7 @@ void client_menu_handler() {
         broadcast_message();
 				break;
 			case 2: 
-        printf("2\n");
+        private_message();
 				break;
 			case 3: 
         printf("3\n"); 
