@@ -244,7 +244,7 @@ void get_user_information_request(client_t *client, char *username)
 				// 	(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
 				// printf("ip %s\n",ip);
 				// Set user info
-				user_info.status = "activo"
+				user_info.status = "activo";
 				user_info.username = "hola";
 				user_info.ip = "122.12.45.5";
 				// strcpy(user_info.status, clients[i]->status;);
