@@ -74,8 +74,8 @@ void broadcast_message() {
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
   unsigned len;                  // Length of serialized data
-  printf("%s\n", message);
-  msg.message = message;
+  // printf("%s\n", message);
+  msg.message = "hola como estas";
   msg.recipient = "everyone";
   msg.sender = name;
  
