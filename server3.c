@@ -518,7 +518,7 @@ int main(int argc, char **argv)
 	{
 		socklen_t clilen = sizeof(cli_addr);
 		connfd = accept(listenfd, (struct sockaddr *)&cli_addr, &clilen);
-
+		printf("Aqui");
 		/* Check if max clients is reached */
 		if ((cli_count + 1) == MAX_CLIENTS)
 		{
@@ -528,7 +528,7 @@ int main(int argc, char **argv)
 			close(connfd);
 			continue;
 		}
-
+		printf("Aqui2");
 		/* Client settings */
 		client_t *cli = (client_t *)malloc(sizeof(client_t));
 		cli->address = cli_addr;
@@ -537,7 +537,7 @@ int main(int argc, char **argv)
 
 		/* Add client to the queue and fork thread */
 		queue_add(cli);
-		printf("Aqui");
+		
 		pthread_create(&tid, NULL, &handle_client, (void *)cli);
 
 		/* Reduce CPU usage */
