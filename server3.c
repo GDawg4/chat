@@ -473,7 +473,7 @@ void *handle_client(void *arg)
 						// // 	fprintf(stderr, "Error message received was null\n");
 						// // 	break;
 						// // }
-						printf("CliPtn %s\n",cli_ptn->change->status);
+						printf("CliPtn %s\n",cli_ptn->change->username);
 						// change_user_status(cli,cli_ptn->change->status,cli_ptn->change->username);
 						break;
 					case 4:
