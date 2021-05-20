@@ -237,16 +237,16 @@ void get_user_information_request(client_t *client, char *username)
 				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
 				printf("aqui\n");
 				char ip[BUFFER_SZ];
-				// sprintf(user_info.ip, "%d.%d.%d.%d",
-				// 	clients[i]->address.sin_addr.s_addr & 0xff,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-				// printf("ip %s\n",ip);
+				sprintf(ip, "%d.%d.%d.%d",
+					clients[i]->address.sin_addr.s_addr & 0xff,
+					(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+					(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+				printf("ip %s\n",ip);
 				// Set user info
-				user_info.status = "activo";
-				user_info.username = "hola";
-				user_info.ip = "122.12.45.5";
+				user_info.status = clients[i]->status;
+				user_info.username = clients[i]->name;
+				user_info.ip = ip;
 				// strcpy(user_info.status, clients[i]->status;);
 				// strcpy(user_info.username, clients[i]->name);
 				// strcpy(user_info.ip, ip);
@@ -264,6 +264,7 @@ void get_user_information_request(client_t *client, char *username)
 					printf("aqui4\n");
 				pthread_mutex_unlock(&clients_mutex);
 				free(buf);
+					printf("aqui5\n");
 				return;
 				
 			}
