@@ -39,17 +39,6 @@ void str_trim_lf(char *arr, int length)
     }
 }
 
-char* get_ip(struct sockaddr_in addr)
-{	
-	char ip;
-	sprintf(ip,"%d.%d.%d.%d",
-		   addr.sin_addr.s_addr & 0xff,
-		   (addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
-	return ip;
-}
-
 void catch_ctrl_c_and_exit(int sig)
 {
     flag = 1;
@@ -240,7 +229,7 @@ void recv_msg_handler()
                 {
                 //User Register Response
                 case 1:
-                    printf("%s\n", server_res->servermessage);
+                    printf("2\n");
                     break;
                 //Connected User Response
                 case 2:
@@ -340,66 +329,8 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    //Get IP
-    char hostbuffer[256];
-    // char ipBuffer;
-    struct hostent *host_entry;
-    // To retrieve host information
-    host_entry = gethostbyname(hostbuffer);
-  
-    // To convert an Internet network
-    // address into ASCII string
-    // ipBuffer = "127.1.0.1";
-    //Create User Registration
-    Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
-    Chat__UserRegistration user = CHAT__USER_REGISTRATION__INIT; 
-    void *buf;                                                          
-    unsigned len;              
-    // Chat__UserRegistration user = &user;
-    // strcpy(user->username, name);
-    // strcpy(user->ip, ipBuffer);
-    user.username = name;
-    user.ip = "127.1.0.1";
- 
-    cli_ptn.option = 1;
-    cli_ptn.registration = &user;
-    
-    len = chat__client_petition__get_packed_size(&cli_ptn);
-    buf = malloc(len);
-    chat__client_petition__pack(&cli_ptn, buf);
-
-    //Send User Registation
-    send(sockfd, buf, len, 0);
-
-    char buff_out[BUFFER_SZ];
-    int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
-    if (receive > 0)
-    {
-        Chat__ServerResponse *server_res;
-        Chat__MessageCommunication *msg;
-
-        server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
-
-        //Get Response Code
-        int code = server_res->code;
-        int option = (server_res->option);
-        if (code == 200 && option == 1)
-        {
-            printf("%s\n", server_res->servermessage);   
-        }
-        else
-        {
-            //Print Error Message
-            printf("%s\n", server_res->servermessage);
-            return EXIT_FAILURE;
-        }
-    }
-    else
-    {
-        return EXIT_FAILURE;
-    }
-
-    bzero(buff_out, BUFFER_SZ);
+    // Send name
+    send(sockfd, name, 32, 0);
 
     printf("=== WELCOME TO THE CHATROOM ===\n");
 
