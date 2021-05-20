@@ -229,11 +229,11 @@ void change_user_status(client_t *client , char *status , char *username)
 				printf("Status %s \n",clients[i]->status);
 				printf("User %s \n",clients[i]->name);
 				//send message to everyone that someone changed status
-				// char buff_out2[BUFFER_SZ];
+				char buff_out2[BUFFER_SZ];
 				printf("FUCK ENDddddd\n");
-				// sprintf(buff_out2, "%s has changed to status %s\n", username, status);
+				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
 				printf("Chat General %s has changed to status %s\n", username, status);
-				// broadcast_message(buff_out2, client);
+				broadcast_message(buff_out2, client);
 				
 
 			}
