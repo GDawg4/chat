@@ -209,36 +209,36 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 }
 
 /* Change User Status*/
-// void broadcast_message("Hola a todos",cli)
-// {
-// 	printf("FUCK");
-// 	// printf("status ad %s",status);
-// 	// pthread_mutex_lock(&clients_mutex);
+void change_status()
+{
+	printf("FUCK");
+	// printf("status ad %s",status);
+	// pthread_mutex_lock(&clients_mutex);
 	
-// 	// for (int i = 0; i < MAX_CLIENTS; ++i)
-// 	// {
-// 	// 	if (clients[i])
-// 	// 	{
-// 	// 		if (strcmp(clients[i]->name, username) == 0)
-// 	// 		{
+	// for (int i = 0; i < MAX_CLIENTS; ++i)
+	// {
+	// 	if (clients[i])
+	// 	{
+	// 		if (strcmp(clients[i]->name, username) == 0)
+	// 		{
 				
 				
-// 	// 			strcpy(clients[i]->status, status);
-// 	// 			sendSuccessServerResponse("Status changed succesfully.",client,3);
-// 	// 			//send message to everyone that someone changed status
-// 	// 			char buff_out2[BUFFER_SZ];
-// 	// 			sprintf(buff_out2, "%s has changed to status %s\n", username, status);
-// 	// 			printf("Chat General %s has changed to status %s\n", username, status);
-// 	// 			broadcast_message(buff_out2, client);
+	// 			strcpy(clients[i]->status, status);
+	// 			sendSuccessServerResponse("Status changed succesfully.",client,3);
+	// 			//send message to everyone that someone changed status
+	// 			char buff_out2[BUFFER_SZ];
+	// 			sprintf(buff_out2, "%s has changed to status %s\n", username, status);
+	// 			printf("Chat General %s has changed to status %s\n", username, status);
+	// 			broadcast_message(buff_out2, client);
 				
 
-// 	// 		}
-// 	// 	}
-// 	// }
-// 	// pthread_mutex_unlock(&clients_mutex);
-// 	// sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
+	// 		}
+	// 	}
+	// }
+	// pthread_mutex_unlock(&clients_mutex);
+	// sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
 
-// }
+}
 
 /* Send private message*/
 void send_private_message(char *msg_string, client_t *client_sender, char *receiverName)
@@ -468,6 +468,7 @@ void *handle_client(void *arg)
 						printf("Client s %s\n", cli_ptn->change->status);
 						printf("Client u %s\n", cli_ptn->change->username);
 						
+						change_status();
 						break;
 					case 4:
 
