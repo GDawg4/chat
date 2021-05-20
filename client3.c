@@ -386,7 +386,6 @@ int main(int argc, char **argv)
     bzero(buff_out, BUFFER_SZ);
 
 
-    printf("=== WELCOME TO THE CHATROOM ===\n");
 
     pthread_t send_msg_thread;
     if (pthread_create(&send_msg_thread, NULL, (void *)client_menu_handler, NULL) != 0)
