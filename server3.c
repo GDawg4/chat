@@ -235,42 +235,31 @@ void get_user_information_request(client_t *client, char *username)
 				srv_res.option = 5;
 				
 				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
-				printf("aqui\n");
 				char ip[BUFFER_SZ];
 				sprintf(ip, "%d.%d.%d.%d",
 					clients[i]->address.sin_addr.s_addr & 0xff,
 					(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
 					(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
 					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-				printf("ip %s\n",ip);
+				
 				// Set user info
 				user_info.status = clients[i]->status;
 				user_info.username = clients[i]->name;
 				user_info.ip = ip;
-				// strcpy(user_info.status, clients[i]->status;);
-				// strcpy(user_info.username, clients[i]->name);
-				// strcpy(user_info.ip, ip);
-				printf("status %s\n",user_info.ip);
-				printf("ip %s\n",user_info.status);
-				printf("username %s\n",user_info.username);
+			
 				srv_res.userinforesponse = &user_info;
 				srv_res.code = 200;
-					printf("aqui2\n");
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
-					printf("aqui3\n");
-				send(client, buf, len, 0);
-					printf("aqui4\n");
+				send(client->sockfd, buf, len, 0);
 				pthread_mutex_unlock(&clients_mutex);
 				free(buf);
-					printf("aqui5\n");
 				return;
 				
 			}
 		}
 	}
-		printf("end\n");
 	pthread_mutex_unlock(&clients_mutex);
 
 	send_failure_response("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
