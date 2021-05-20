@@ -221,9 +221,9 @@ void recv_msg_handler()
             server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
             //Get Response Code
-            int code = server_res->code;
+            // int code = server_res->code;
             // printf('Message: %d\n',server_res->servermessage);
-            printf('Code: %d\n',code);
+            // printf('Code: %d\n',code);
             // if (code == 200)
             // {
                 //Get Response Option
