@@ -52,9 +52,9 @@ void str_trim_lf(char *arr, int length)
 }
 
 
-char get_ip(struct sockaddr_in addr)
+char* get_ip(struct sockaddr_in addr)
 {	
-	char ip;
+	char ip[BUFFER_SZ];
 	sprintf(ip,"%d.%d.%d.%d",
 		   addr.sin_addr.s_addr & 0xff,
 		   (addr.sin_addr.s_addr & 0xff00) >> 8,
@@ -491,7 +491,8 @@ int main(int argc, char **argv)
 		}
 
 		/* Client settings */
-		printf("IP %s",get_ip(cli_addr));
+		char *ip = get_ip(cli_addr);
+		printf("IP %s",ip);
 		client_t *cli = (client_t *)malloc(sizeof(client_t));
 		cli->address = cli_addr;
 		cli->sockfd = connfd;
