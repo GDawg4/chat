@@ -288,7 +288,7 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 		if (clients[i])
 		{	
 			
-			if (clients[i]->uid != uid && clientes[i]->address==addr)
+			if (clients[i]->uid != uid && clients[i]->address==addr)
 			{
 				
 					pthread_mutex_unlock(&clients_mutex);
@@ -316,12 +316,14 @@ void *handle_client(void *arg)
 	Chat__UserRegistration *user;
 	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 	int optionRegister = (cli_ptn_register->option);
-	name = user.username;
+	name = user->username;
+	char ip = user->ip;
+	printf("IP %s\n", ip);
 	if(optionRegister==1){
 		sendFailureServerResponse("User registration was expected.\n",cli,1);
 		leave_flag = 1;
 	}
-	if (receive <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1))
+	if (receive <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1)
 	{
 		sendFailureServerResponse("Name must be between 2 and 32 characters.\n",cli,1);
 		leave_flag = 1;
