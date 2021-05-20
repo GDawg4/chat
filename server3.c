@@ -208,7 +208,7 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 }
 
 /* Change User Status*/
-void change_user_status(client_t *client , char *status, , char *username)
+void change_user_status(client_t *client , char *status , char *username)
 {
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
