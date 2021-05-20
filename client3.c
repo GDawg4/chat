@@ -342,7 +342,7 @@ int main(int argc, char **argv)
 
     //Create User Registration
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
-    Chat__UserRegistration user_reg = CHAT__USER_REGISTRATION__INIT; 
+    Chat__UserRegistration *user_reg = CHAT__USER_REGISTRATION__INIT; 
     void *buf;                                                          
     unsigned len;              
 
@@ -350,7 +350,7 @@ int main(int argc, char **argv)
     user_reg.ip = IPbuffer;
 
     cli_ptn.option = 1;
-    cli_ptn.registration = user_reg;
+    cli_ptn.registration = &user_reg;
 
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
