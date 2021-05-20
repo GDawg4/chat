@@ -247,7 +247,7 @@ void get_user_information_request(client_t *client, char *username)
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
-				send(client, buf, len, 0)
+				send(client, buf, len, 0);
 				pthread_mutex_unlock(&clients_mutex);
 				free(buf);
 				return;
