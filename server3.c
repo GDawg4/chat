@@ -127,7 +127,7 @@ void send_private_message(char *s, int uidSender, char *receiverName)
 	{
 		if (clients[i])
 		{
-			if (clients[i]->name == receiverName)
+			if (strcmp(clients[i]->name,receiverName)==0)
 			{
 				if (write(clients[i]->sockfd, s, strlen(s)) < 0)
 				{
