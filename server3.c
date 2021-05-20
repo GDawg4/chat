@@ -154,7 +154,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 				{
-					sendFailureServerResponse("Error sending broadcast message.", client_sender, 0);
+					send_failure_response("Error sending broadcast message.", client_sender, 0);
 					break;
 				}
 
@@ -187,7 +187,7 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender, i
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-void sendFailureServerResponse(char *failure_message, client_t *client_sender, int option)
+void send_failure_response(char *failure_message, client_t *client_sender, int option)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -216,7 +216,9 @@ void get_user_information_request(client_t *client, char *username)
 	pthread_mutex_lock(&clients_mutex);
 	// printf("Username %s\n",username);
 	if(strcmp("everyone",username)==0){
-		sendFailureServerResponse('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n',client,5);
+		pthread_mutex_unlock(&clients_mutex);
+		send_failure_response('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n',client,5);
+		return;
 	}
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -232,26 +234,26 @@ void get_user_information_request(client_t *client, char *username)
 				unsigned len;
 				srv_res.option = 5;
 				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
-				printf("aqui");
-				// char ip[BUFFER_SZ];
-				// sprintf(ip, "%d.%d.%d.%d",
-				// 	clients[i]->address.sin_addr.s_addr & 0xff,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-				// //Set user info
-				// user_info.status = clients[i]->status;
-				// user_info.username = clients[i]->name;
-				// user_info.ip = ip;
-				// srv_res.userinforesponse = &user_info;
-				// srv_res.code = 200;
-				// len = chat__server_response__get_packed_size(&srv_res);
-				// buf = malloc(len);
-				// chat__server_response__pack(&srv_res, buf);
-				// send(client, buf, len, 0);
-				// pthread_mutex_unlock(&clients_mutex);
-				// free(buf);
-				// return;
+				printf("aqui\n");
+				char ip[BUFFER_SZ];
+				sprintf(ip, "%d.%d.%d.%d",
+					clients[i]->address.sin_addr.s_addr & 0xff,
+					(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+					(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+				//Set user info
+				user_info.status = clients[i]->status;
+				user_info.username = clients[i]->name;
+				user_info.ip = ip;
+				srv_res.userinforesponse = &user_info;
+				srv_res.code = 200;
+				len = chat__server_response__get_packed_size(&srv_res);
+				buf = malloc(len);
+				chat__server_response__pack(&srv_res, buf);
+				send(client, buf, len, 0);
+				pthread_mutex_unlock(&clients_mutex);
+				free(buf);
+				return;
 				
 			}
 		}
@@ -259,7 +261,7 @@ void get_user_information_request(client_t *client, char *username)
 
 	pthread_mutex_unlock(&clients_mutex);
 
-	// sendFailureServerResponse("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
+	// send_failure_response("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
 }
 /* Change User Status*/
 void change_user_status(client_t *client, char *status, char *username)
@@ -295,7 +297,7 @@ void change_user_status(client_t *client, char *status, char *username)
 	}
 
 	pthread_mutex_unlock(&clients_mutex);
-	sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
+	send_failure_response("Trying to change status of user that doesnt exit.", client, 3);
 }
 
 /* Send private message*/
@@ -322,8 +324,9 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 				chat__server_response__pack(&srv_res, buf);
 
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
-				{
-					sendFailureServerResponse("Error sending broadcast message. User is no longer connected", client_sender, 0);
+				{	
+					pthread_mutex_unlock(&clients_mutex);
+					send_failure_response("Error sending broadcast message. User is no longer connected", client_sender, 0);
 					pthread_mutex_unlock(&clients_mutex);
 					return;
 				}
@@ -339,7 +342,7 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 		}
 	}
 	pthread_mutex_unlock(&clients_mutex);
-	sendFailureServerResponse("Trying to send private message to user that doesnt exit.", client_sender, 0);
+	send_failure_response("Trying to send private message to user that doesnt exit.", client_sender, 0);
 }
 
 /* Return response a user*/
@@ -433,7 +436,8 @@ void *handle_client(void *arg)
 	// int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 	if (recv(cli->sockfd, buff_out, BUFFER_SZ, 0) <= 0)
 	{
-		sendFailureServerResponse("Error sending message in client.\n", cli, 1);
+		
+		send_failure_response("Error sending message in client.\n", cli, 1);
 		leave_flag = 1;
 	}
 
@@ -444,12 +448,12 @@ void *handle_client(void *arg)
 	user = cli_ptn_register->registration;
 	if (optionRegister != 1)
 	{
-		sendFailureServerResponse("User registration was expected.\n", cli, 1);
+		send_failure_response("User registration was expected.\n", cli, 1);
 		leave_flag = 1;
 	}
 	if (strlen(user->username) < 2 || strlen(user->username) >= 32 - 1)
 	{
-		sendFailureServerResponse("Name must be between 2 and 32 characters.\n", cli, 1);
+		send_failure_response("Name must be between 2 and 32 characters.\n", cli, 1);
 		leave_flag = 1;
 	}
 	
@@ -458,19 +462,19 @@ void *handle_client(void *arg)
 		
 		if (strcmp(user->username,"everyone")==0)
 		{
-			sendFailureServerResponse("El nombre everyone se encuentra reservado. Utiliza otro nombre.\n", cli, 1);
+			send_failure_response("El nombre everyone se encuentra reservado. Utiliza otro nombre.\n", cli, 1);
 			leave_flag = 1;
 		}
 
 		if (check_is_name_available_in_clients(user->username, cli->uid) == 0)
 		{
 			leave_flag = 1;
-			sendFailureServerResponse("Client name already exists. Use a different name\n", cli, 1);
+			send_failure_response("Client name already exists. Use a different name\n", cli, 1);
 		}
 		if (check_is_ip_available_in_clients(cli->uid, cli->address) == 0)
 		{
 			leave_flag = 1;
-			sendFailureServerResponse("Client IP already exists. Unable to connect\n", cli, 1);
+			send_failure_response("Client IP already exists. Unable to connect\n", cli, 1);
 		}
 		if (leave_flag == 0)
 		{
