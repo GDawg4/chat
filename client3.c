@@ -332,7 +332,9 @@ int main(int argc, char **argv)
     char *ip_buffer;
     char hostbuffer[256];
     struct hostent *host_entry;
+    int hostname;
 
+    hostname = gethostname(hostbuffer, sizeof(hostbuffer));
     host_entry = gethostbyname(hostbuffer);
     ip_buffer = inet_ntoa(*((struct in_addr*)
                            host_entry->h_addr_list[0]));
