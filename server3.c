@@ -463,18 +463,12 @@ void *handle_client(void *arg)
 						break;
 					case 3:
 						printf("Opcion 33\n");
-						// /
-						// // printf("Opcion 3\n");
-						// // printf("CliPtn %s\n",cli_ptn);
 						
-
-						// // if (user_status == NULL)
-						// // {
-						// // 	fprintf(stderr, "Error message received was null\n");
-						// // 	break;
-						// // }
-						printf("CliPtn %s\n",cli_ptn->change->username);
-						// change_user_status(cli,cli_ptn->change->status,cli_ptn->change->username);
+						char status[BUFFER_SZ];
+						sprintf(buff_out2, "%s", cli_ptn->change->status);
+						char username[BUFFER_SZ];
+						sprintf(buff_out2, "%s", cli_ptn->change->username);
+						change_user_status(cli,status,username);
 						break;
 					case 4:
 
