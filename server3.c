@@ -299,7 +299,7 @@ void *handle_client(void *arg)
 						break;
 					case 7:
 						printf("Gracias por usar el chat!\n");
-						catch_ctrl_c_and_exit(2);
+						
 						break;
 					default:
 						printf("Wrong Choice. Enter again\n");
