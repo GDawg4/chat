@@ -148,7 +148,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
 						break;
 					}else{
-						printf("Chat General %s -> %s\n", msg->sender, msg->message);
+						printf("Chat General %s -> %s\n", msg.sender, msg.message);
 					}
 				free(buf);
 			}
