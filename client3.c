@@ -13,6 +13,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <ifaddrs.h>
+
 // #include "amessage.pb-c.h"
 #define MAX_MSG_SIZE 1024
 #define BUFFER_SZ 2048 * 24
@@ -332,14 +333,31 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    struct ifaddrs *id;
-    int val;
-    val = getifaddrs(&id);
-    printf("Network Interface Name :- %s\n",id->ifa_name);
-    printf("Network Address of %s :- %d\n",id->ifa_name,id->ifa_addr);
-    printf("Network Data :- %d \n",id->ifa_data);
-    printf("Socket Data : -%c\n",id->ifa_addr->sa_data);
-    //display result
+    struct ifaddrs * ifAddrStruct=NULL;
+    struct ifaddrs * ifa=NULL;
+    void * tmpAddrPtr=NULL;
+
+    getifaddrs(&ifAddrStruct);
+
+    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr) {
+            continue;
+        }
+        if (ifa->ifa_addr->sa_family == AF_INET) { // check it is IP4
+            // is a valid IP4 Address
+            tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+            char addressBuffer[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+            printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
+        } else if (ifa->ifa_addr->sa_family == AF_INET6) { // check it is IP6
+            // is a valid IP6 Address
+            tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+            char addressBuffer[INET6_ADDRSTRLEN];
+            inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
+            printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
+        } 
+    }
+    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
     // printf("IP Address is %s - %s\n" , array , inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr) );
 
 

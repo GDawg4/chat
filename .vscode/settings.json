@@ -10,6 +10,9 @@
         "xstring": "cpp",
         "xutility": "cpp",
         "system_error": "c",
-        "xlocale": "c"
+        "xlocale": "c",
+        "types.h": "c",
+        "stdio.h": "c",
+        "string.h": "c"
     }
 }
