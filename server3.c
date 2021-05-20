@@ -130,6 +130,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 		{
 			if (clients[i]->uid != client_sender->uid)
 			{
+				printf("LLego aqui");
 				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 				void *buf; // Buffer to store serialized data
 				unsigned len;
@@ -142,7 +143,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
-
+				printf("LLego aqui send");
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
 						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
@@ -150,6 +151,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 					}else{
 						printf("Chat General %s -> %s\n", msg.sender, msg.message);
 					}
+				printf("Chat General %s -> %s\n", msg.sender, msg.message);	
 				free(buf);
 			}
 		}
@@ -349,12 +351,13 @@ void *handle_client(void *arg)
 							exit(1);
 						}
 
-						printf("\n");
+						// printf("\n");
 						if (strcmp(msg->recipient, "everyone") == 0)
 						{	
+
 							char buff_out2[BUFFER_SZ];
 							sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
-							
+							printf("Chat General 1 %s -> %s\n", msg->sender, msg->message);
 							broadcast_message(buff_out2, cli);
 						}else{
 							char buff_out2[BUFFER_SZ];
