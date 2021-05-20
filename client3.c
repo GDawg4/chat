@@ -342,27 +342,27 @@ int main(int argc, char **argv)
 
     //Get IP
     char hostbuffer[256];
-    char IPbuffer;
+    char ipBuffer;
     struct hostent *host_entry;
     // To retrieve host information
     host_entry = gethostbyname(hostbuffer);
   
     // To convert an Internet network
     // address into ASCII string
-    IPbuffer = "127.1.0.1";
+    ipBuffer = "127.1.0.1";
     //Create User Registration
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
-    Chat__UserRegistration user_reg = CHAT__USER_REGISTRATION__INIT; 
+    Chat__UserRegistration *user = CHAT__USER_REGISTRATION__INIT; 
     void *buf;                                                          
     unsigned len;              
 
-    // strcpy(user_reg->username, name);
-    // strcpy(user_reg->ip, IPbuffer);
-    user_reg.username = name;
-    user_reg.ip = IPbuffer;
+    // strcpy(user->username, name);
+    // strcpy(user->ip, ipBuffer);
+    // user.username = name;
+    // user.ip = ipBuffer;
 
     cli_ptn.option = 1;
-    cli_ptn.registration = user_reg;
+    // cli_ptn.registration = &user;
 
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
