@@ -226,7 +226,7 @@ void user_information()
     // printf("%s\n", message);
     user_request.user = user_name;
 
-    cli_ptn.user = &user_request;
+    cli_ptn.users = &user_request;
     cli_ptn.option = 5;
 
     len = chat__client_petition__get_packed_size(&cli_ptn);
