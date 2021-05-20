@@ -219,10 +219,11 @@ void change_user_status(client_t *client , char *status , char *username)
 	{
 		if (clients[i])
 		{
+			printf("FUCK 1\n");
 			if (strcmp(clients[i]->name, username) == 0)
 			{
 				
-				
+				printf("FUCK 2\n");
 				strcpy(clients[i]->status, status);
 				sendSuccessServerResponse("Status changed succesfully.",client,3);
 				//send message to everyone that someone changed status
@@ -235,11 +236,12 @@ void change_user_status(client_t *client , char *status , char *username)
 			}
 		}
 	}
-	pthread_mutex_unlock(&clients_mutex);
-	sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
+
 	
 	printf("FUCK END\n");
 
+	pthread_mutex_unlock(&clients_mutex);
+	sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
 }
 
 /* Send private message*/
