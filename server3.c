@@ -25,6 +25,7 @@ typedef struct
 	struct sockaddr_in address;
 	int sockfd;
 	int uid;
+	char status[32];
 	char name[32];
 } client_t;
 
@@ -63,6 +64,7 @@ void print_client_addr(struct sockaddr_in addr)
 /* Add clients to queue */
 void queue_add(client_t *cl)
 {
+	cl->status = 'activo';
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -96,8 +98,7 @@ void queue_remove(int uid)
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-/* Send message to all clients except sender */
-void broadcast_message(char *s, int uid)
+client_t get_client(int uid)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -105,17 +106,86 @@ void broadcast_message(char *s, int uid)
 	{
 		if (clients[i])
 		{
-			if (clients[i]->uid != uid)
+			if (clients[i]->uid == uid)
 			{
-				if (write(clients[i]->sockfd, s, strlen(s)) < 0)
-				{
-					perror("ERROR: write to descriptor failed");
-					break;
-				}
+				pthread_mutex_unlock(&clients_mutex);
+				return clients[i];
 			}
 		}
 	}
+	pthread_mutex_unlock(&clients_mutex);
+	return null;
+}
 
+/* Send message to all clients except sender */
+void broadcast_message(char *msg_string, client_t *client_sender)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
+			if (clients[i]->uid != client_sender->uid)
+			{
+				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+				void *buf; // Buffer to store serialized data
+				unsigned len;
+				srv_res.option = 4;
+				Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+				msg.message = msg_string;
+				msg.recipient = clients[i]->name;
+				msg.sender = client_sender->name;
+				srv_res.messagecommunication = msg;
+				len = chat__server_response__get_packed_size(&srv_res);
+				buf = malloc(len);
+				chat__server_response__pack(&srv_res, buf);
+
+				if (send(sockfd, buf, len, 0)) < 0)
+					{
+						sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						break;
+					}
+				free(buf);
+			}
+		}
+	}
+	sendSuccessServerResponse("Message sent succesfully", client_sender);
+}
+
+void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+	void *buf;	  // Buffer to store serialized data
+	unsigned len; // Length of serialized data
+
+	srv_res.code = 200;
+	srv_res.servermessage = succces_message;
+
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(sockfd, buf, len, 0);
+	pthread_mutex_unlock(&clients_mutex);
+}
+
+void sendFailureServerResponse(char *failure_message, client_t *client_sender)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+	void *buf;	  // Buffer to store serialized data
+	unsigned len; // Length of serialized data
+
+	srv_res.code = 500;
+	srv_res.servermessage = failure_message;
+
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(client_sender->sockfd, buf, len, 0);
 	pthread_mutex_unlock(&clients_mutex);
 }
 
@@ -127,7 +197,7 @@ void send_private_message(char *s, int uidSender, char *receiverName)
 	{
 		if (clients[i])
 		{
-			if (strcmp(clients[i]->name,receiverName)==0)
+			if (strcmp(clients[i]->name, receiverName) == 0)
 			{
 				if (write(clients[i]->sockfd, s, strlen(s)) < 0)
 				{
@@ -209,7 +279,7 @@ void *handle_client(void *arg)
 			strcpy(cli->name, name);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
-			broadcast_message(buff_out, cli->uid);
+			broadcast_message(buff_out, cli);
 		}
 		else
 		{
@@ -234,78 +304,66 @@ void *handle_client(void *arg)
 			if (strlen(buff_out) > 0)
 			{
 
-				//str_trim_lf(buff_out, strlen(buff_out));
+				Chat__ClientPetition *cli_ptn;
+				Chat__MessageCommunication *msg;
 
-				if (strcmp(buff_out, "hola") == 0)
+				// Read packed message from standard-input.
+				// Unpack the message using protobuf-c.
+
+				cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
+				int option = (cli_ptn->option);
+
+				switch (option)
 				{
-					printf("Hey");
+				case 1:
+					// broadcast_message();
+					break;
+				case 2:
+					printf("2\n");
+					break;
+				case 3:
+					printf("3\n");
+					break;
+				case 4: // Messages
 
-					return_response_to_sender("HI", cli->uid);
-					// printf("%s -> %s\n", buff_out, cli->name);
-				}
-				else
-				{
-
-					Chat__ClientPetition *cli_ptn;
-					Chat__MessageCommunication *msg;
-
-					// Read packed message from standard-input.
-					// Unpack the message using protobuf-c.
-
-					cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
-					int option = (cli_ptn->option);
-
-					switch (option)
+					msg = cli_ptn->messagecommunication;
+					if (msg == NULL)
 					{
-					case 1:
-						// broadcast_message();
-						break;
-					case 2:
-						printf("2\n");
-						break;
-					case 3:
-						printf("3\n");
-						break;
-					case 4:
-						
-						msg = cli_ptn->messagecommunication;
-						if (msg == NULL)
-						{
-							fprintf(stderr, "Error message received was null\n");
-							exit(1);
-						}
-
-						printf("\n");
-						if (strcmp(msg->recipient, "everyone") == 0)
-						{	
-							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
-							printf("Chat General %s -> %s\n", msg->sender, msg->message);
-							broadcast_message(buff_out2, cli->uid);
-						}else{
-							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "Chat privado %s -> %s\n", msg->sender, msg->message);
-							printf("Chat Privado %s hacia %s -> %s\n", msg->sender,msg->recipient, msg->message);
-							send_private_message(buff_out2, cli->uid,msg->recipient);
-						}
-						// Free the unpacked message
-						chat__message_communication__free_unpacked(msg, NULL);
-						break;
-					case 5:
-						printf("5\n");
-						break;
-					case 6:
-						printf("6\n");
-						break;
-					case 7:
-						printf("Gracias por usar el chat!\n");
-						
-						break;
-					default:
-						printf("Wrong Choice. Enter again\n");
-						break;
+						fprintf(stderr, "Error message received was null\n");
+						exit(1);
 					}
-					
+
+					printf("\n");
+					if (strcmp(msg->recipient, "everyone") == 0)
+					{
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
+						printf("Chat General %s -> %s\n", msg->sender, msg->message);
+						broadcast_message(buff_out2, cli);
+					}
+					else
+					{
+						char buff_out2[BUFFER_SZ];
+						sprintf(buff_out2, "Chat privado %s -> %s\n", msg->sender, msg->message);
+						printf("Chat Privado %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
+						send_private_message(buff_out2, cli->uid, msg->recipient);
+					}
+
+					chat__message_communication__free_unpacked(msg, NULL);
+					break;
+				case 5:
+					printf("5\n");
+					break;
+				case 6:
+					printf("6\n");
+					break;
+				case 7:
+					printf("Gracias por usar el chat!\n");
+
+					break;
+				default:
+					printf("Wrong Choice. Enter again\n");
+					break;
 				}
 			}
 		}
