@@ -243,14 +243,14 @@ void recv_msg_handler()
                 //Messages Response
                 case 4:
                     msg = server_res->messagecommunication;
-                    
+
                     if (strcmp(msg->recipient, "everyone") == 0)
                     {
                         printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
                     }
                     else
                     {
-                        printf("Chat Privado recibido de %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
+                        printf("Chat Privado enviado por %s -> %s\n", msg->sender, msg->message);
                     }
                     break;
                 //User Information Response
