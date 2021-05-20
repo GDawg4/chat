@@ -446,7 +446,7 @@ void *handle_client(void *arg)
 
 					Chat__ClientPetition *cli_ptn;
 					Chat__MessageCommunication *msg;
-					Chat__ChangeStatus *user_status;
+					
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
 
@@ -462,16 +462,21 @@ void *handle_client(void *arg)
 						printf("2\n");
 						break;
 					case 3:
+						printf("Opcion 33\n");
+						printf("CliPtn %s\n",cli_ptn->change->status);
 						printf("Opcion 3\n");
-						user_status = cli_ptn->change;
-						if (user_status == NULL)
-						{
-							fprintf(stderr, "Error message received was null\n");
-							break;
-						}
-						printf("Status %s",user_status->status);
-						printf("Username %s",user_status->username);
-						change_user_status(cli,user_status->status,user_status->username);
+						// printf("CliPtn %s\n",cli_ptn);
+						
+
+						// user_status = cli_ptn->change;
+						// if (user_status == NULL)
+						// {
+						// 	fprintf(stderr, "Error message received was null\n");
+						// 	break;
+						// }
+						// printf("Status %s",user_status->status);
+						// printf("Username %s",user_status->username);
+						// change_user_status(cli,user_status->status,user_status->username);
 						break;
 					case 4:
 
