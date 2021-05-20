@@ -88,7 +88,7 @@ void broadcast_message() {
 	char buffer[LENGTH + 32] = {};
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
-  scanf("%[^\n]%*c", message);
+  scanf("%[^\n]%*c", &message);
   
   // str_trim_lf(message, LENGTH);
   
