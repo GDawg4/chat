@@ -12,6 +12,7 @@
 #include "new.pb-c.h"
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <ifaddrs.h>
 // #include "amessage.pb-c.h"
 #define MAX_MSG_SIZE 1024
 #define BUFFER_SZ 2048 * 24
@@ -331,19 +332,15 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    int n;
-    struct ifreq ifr;
-    char array[] = "eth0";
- 
-    n = socket(AF_INET, SOCK_DGRAM, 0);
-    //Type of address to retrieve - IPv4 IP address
-    ifr.ifr_addr.sa_family = AF_INET;
-    //Copy the interface name in the ifreq structure
-    strncpy(ifr.ifr_name , array , IFNAMSIZ - 1);
-    ioctl(n, SIOCGIFADDR, &ifr);
-    close(n);
+    struct ifaddrs *id;
+    int val;
+    val = getifaddrs(&id);
+    printf("Network Interface Name :- %s\n",id->ifa_name);
+    printf("Network Address of %s :- %d\n",id->ifa_name,id->ifa_addr);
+    printf("Network Data :- %d \n",id->ifa_data);
+    printf("Socket Data : -%c\n",id->ifa_addr->sa_data);
     //display result
-    printf("IP Address is %s - %s\n" , array , inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr) );
+    // printf("IP Address is %s - %s\n" , array , inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr) );
 
 
     // Send name
