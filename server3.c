@@ -333,16 +333,15 @@ void *handle_client(void *arg)
 	client_t *cli = (client_t *)arg;
 	printf("aqui3");
 	// int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
-	if (recv(cli->sockfd, buff_out, BUFFER_SZ, 0) <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1)
+	if (recv(cli->sockfd, buff_out, BUFFER_SZ, 0) <= 0)
 	{
 		printf("Didn't enter the name.\n");
-		
 		leave_flag=1;
 	}
 	printf("Name %s\n",buff_out);
-	// Chat__ClientPetition *cli_ptn_register;
-	// Chat__UserRegistration *user;
-	// cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
+	Chat__ClientPetition *cli_ptn_register;
+	Chat__UserRegistration *user;
+	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 	// int optionRegister = (cli_ptn_register->option);
 	// printf("BUF OUT %s\n",buff_out);
 	printf("aqui");
