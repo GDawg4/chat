@@ -224,8 +224,8 @@ void recv_msg_handler()
             int code = server_res->code;
             printf("Message: %d\n",server_res->servermessage);
             printf("Code: %d\n",code);
-            // if (code == 200)
-            // {
+            if (option!=0)
+            {
                 //Get Response Option
                 int option = (server_res->option);
                 printf("Option: %d\n",option);
@@ -263,15 +263,20 @@ void recv_msg_handler()
                 default:
                     break;
                 }
-            // }
-            // else if (code == 500)
-            // {
-            //     //Print Error Message
-            //     printf("%s", server_res->servermessage);
-            //     str_overwrite_stdout();
-            // }
-            //   printf("%s", message);
-            //   str_overwrite_stdout();
+            }
+            else if (code ==200 && option==0){
+                //Print Error Message
+                str_overwrite_stdout();
+                printf("%s", server_res->servermessage);
+                
+            }
+            else if (code == 500 && option==0)
+            {
+                //Print Error Message
+                str_overwrite_stdout();
+                printf("%s", server_res->servermessage);
+                // str_overwrite_stdout();
+            }
         }
         else if (receive == 0)
         {
