@@ -244,9 +244,12 @@ void get_user_information_request(client_t *client, char *username)
 					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
 				printf("ip %s\n",ip);
 				// Set user info
-				user_info.status = clients[i]->status;
-				user_info.username = clients[i]->name;
-				user_info.ip = ip;
+				// user_info.status = clients[i]->status;
+				// user_info.username = clients[i]->name;
+				// user_info.ip = ip;
+				strcpy(user_info.status, clients[i]->status;);
+				strcpy(user_info.username, clients[i]->name);
+				strcpy(user_info.ip, ip);
 				printf("status %d\n",user_info.ip);
 				printf("ip %d\n",user_info.status);
 				printf("username %d\n",user_info.username);
