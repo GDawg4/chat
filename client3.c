@@ -331,7 +331,7 @@ int main(int argc, char **argv)
 
     char *ip_client;
     ip_client = "3.142.76.26";
-    printf("ip %s ",ip_client);
+    
 
      //Create User Registration
     Chat__ClientPetition cli_ptn_register = CHAT__CLIENT_PETITION__INIT;
