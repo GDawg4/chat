@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <netdb.h>
 #include "new.pb-c.h"
+#include <sys/ioctl.h>
+#include <net/if.h>
 // #include "amessage.pb-c.h"
 #define MAX_MSG_SIZE 1024
 #define BUFFER_SZ 2048 * 24
