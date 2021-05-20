@@ -329,14 +329,19 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    char *ip_buffer;
-    char hostbuffer[256];
-    struct hostent *host_entry;
-
-    host_entry = gethostbyname(hostbuffer);
-    ip_buffer = inet_ntoa(*((struct in_addr*)
-                           host_entry->h_addr_list[0]));
-    printf("Host IP: %s", ip_buffer);
+    int n;
+    struct ifreq ifr;
+    char array[] = "eth0";
+ 
+    n = socket(AF_INET, SOCK_DGRAM, 0);
+    //Type of address to retrieve - IPv4 IP address
+    ifr.ifr_addr.sa_family = AF_INET;
+    //Copy the interface name in the ifreq structure
+    strncpy(ifr.ifr_name , array , IFNAMSIZ - 1);
+    ioctl(n, SIOCGIFADDR, &ifr);
+    close(n);
+    //display result
+    printf("IP Address is %s - %s\n" , array , inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr) );
 
 
     // Send name
