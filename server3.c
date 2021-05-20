@@ -51,7 +51,7 @@ void str_trim_lf(char *arr, int length)
 	}
 }
 
-char* get_client_ip(struct sockaddr_in addr)
+char* get_ip(struct sockaddr_in addr)
 {	
 	char ip;
 	sprintf(ip,"%d.%d.%d.%d",
@@ -288,7 +288,7 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 		if (clients[i])
 		{	
 			
-			if (clients[i]->uid != uid && clients[i]->address==addr)
+			if (clients[i]->uid != uid && strcmp(get_ip(clients[i]->address),get_ip(addr))==0)
 			{
 				
 					pthread_mutex_unlock(&clients_mutex);
