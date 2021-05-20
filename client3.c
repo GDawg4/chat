@@ -349,7 +349,7 @@ int main(int argc, char **argv)
   
     // To convert an Internet network
     // address into ASCII string
-    IPbuffer = "127.1.0.1"
+    IPbuffer = "127.1.0.1";
     //Create User Registration
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRegistration *user_reg = CHAT__USER_REGISTRATION__INIT; 
