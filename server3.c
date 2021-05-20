@@ -465,9 +465,9 @@ void *handle_client(void *arg)
 					
 					
 						
-						char buff_out2[BUFFER_SZ];
-						sprintf(buff_out2, "Hola a todos\n");
-						broadcast_message(buff_out2,cli);
+						char buff_out3[BUFFER_SZ];
+						sprintf(buff_out3, "Hola a todos\n");
+						broadcast_message(buff_out3,cli);
 						
 						break;
 					case 4:
