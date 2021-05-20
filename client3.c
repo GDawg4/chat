@@ -68,7 +68,7 @@ void broadcast_message() {
   str_overwrite_stdout();
   scanf("%s", &message);
   // str_trim_lf(message, LENGTH);
-  
+  printf("%s", &message);
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
