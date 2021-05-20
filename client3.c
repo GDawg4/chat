@@ -25,28 +25,6 @@ void str_overwrite_stdout() {
   fflush(stdout);
 }
 
-char* scan_line(char* buffer, int buffer_size);
-
-char* scan_line(char* buffer, int buffer_size) {
-   char* p = buffer;
-   int count = 0;
-   do {
-       char c;
-       scanf("%c", &c); // scan a single character
-       // break on end of line, string terminating NUL, or end of file
-       if (c == '\r' || c == '\n' || c == 0 || c == EOF) {
-           *p = 0;
-           break;
-       }
-       *p++ = c; // add the valid character into the buffer
-   } while (count < buffer_size - 1);  // don't overrun the buffer
-   // ensure the string is null terminated
-   buffer[buffer_size - 1] = 0;
-   return buffer;
-}
-
-#define MAX_SCAN_LENGTH 1024
-
 void str_trim_lf (char* arr, int length) {
   int i;
   for (i = 0; i < length; i++) { // trim \n
@@ -86,28 +64,34 @@ void send_msg_handler() {
 void broadcast_message() {
   char message[LENGTH] = {};
 	char buffer[LENGTH + 32] = {};
+
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
-  scanf("%s", message);
-  
+  scanf("%s", &message);
   // str_trim_lf(message, LENGTH);
   
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
   unsigned len;                  // Length of serialized data
+  printf("%s\n", message);
   msg.message = message;
   msg.recipient = "everyone";
   msg.sender = name;
  
   cli_ptn.messagecommunication = &msg;
-  cli_ptn.option = 1;
-
-  
+  cli_ptn.option = 2;
+  //  len = chat__message_communication__get_packed_size(&msg);
+  // buf = malloc(len);
+  // chat__message_communication__pack(&msg,buf);
   len = chat__client_petition__get_packed_size(&cli_ptn);
   buf = malloc(len);
   chat__client_petition__pack(&cli_ptn,buf);
   
+  // fprintf(stderr,"Writing %d serialized bytes\n",len); // See the length of message
+  // fwrite(buf,strlen(buf),1,stdout); // Write to stdout to allow direct command line piping
+  
+
 
   if (strcmp(message, "exit") == 0) {
     return;
