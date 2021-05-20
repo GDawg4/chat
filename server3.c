@@ -316,9 +316,8 @@ void *handle_client(void *arg)
 	Chat__UserRegistration *user;
 	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 	int optionRegister = (cli_ptn_register->option);
-	name = user->username;
-	char ip = user->ip;
-	printf("IP %s\n", ip);
+	strcpy(name,user->username);
+	printf("IP %s\n", user->ip);
 	if(optionRegister==1){
 		sendFailureServerResponse("User registration was expected.\n",cli,1);
 		leave_flag = 1;
