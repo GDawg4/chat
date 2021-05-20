@@ -222,13 +222,9 @@ void recv_msg_handler()
 
             //Get Response Code
             int code = server_res->code;
-            printf("Message: %d\n",server_res->servermessage);
-            printf("Code: %d\n",code);
+            int option = (server_res->option);
             if (option!=0)
             {
-                //Get Response Option
-                int option = (server_res->option);
-                printf("Option: %d\n",option);
                 switch (option)
                 {
                 //User Register Response
@@ -264,7 +260,7 @@ void recv_msg_handler()
                     break;
                 }
             }
-            else if (code ==200 && option==0){
+            else if (code == 200 && option==0){
                 //Print Error Message
                 str_overwrite_stdout();
                 printf("%s", server_res->servermessage);
