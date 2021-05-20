@@ -360,11 +360,10 @@ int main(int argc, char **argv)
     // strcpy(user->ip, ipBuffer);
     user.username = name;
     user.ip = "127.1.0.1";
-    printf("%s",user.username);
-    printf("%s",user.ip);
+ 
     cli_ptn.option = 1;
     cli_ptn.registration = &user;
-
+    
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
