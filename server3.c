@@ -219,11 +219,11 @@ void change_user_status(client_t *client , char *status , char *username)
 	{
 		if (clients[i])
 		{
-			printf("FUCK 1\n");
 			if (strcmp(clients[i]->name, username) == 0)
 			{
 				
-				printf("FUCK 2\n");
+				printf("Status %s \n",clients[i]->status);
+				printf("User %s \n",clients[i]->username);
 				strcpy(clients[i]->status, status);
 				sendSuccessServerResponse("Status changed succesfully.",client,3);
 				//send message to everyone that someone changed status
