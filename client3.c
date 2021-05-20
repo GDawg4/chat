@@ -111,6 +111,7 @@ void private_message() {
   scanf("%c",&temp);
   printf("Ingresa el nombre del usuario a quien deseas enviarle el mensaje.\n");
   scanf("%[^\n]",&user_name);
+  scanf("%c",&temp);
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
   scanf("%[^\n]", &message);
