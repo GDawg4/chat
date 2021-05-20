@@ -13,6 +13,12 @@
         "xlocale": "c",
         "types.h": "c",
         "stdio.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "istream": "cpp",
+        "memory": "cpp",
+        "ostream": "cpp",
+        "streambuf": "cpp",
+        "utility": "cpp",
+        "xlocnum": "cpp"
     }
 }
