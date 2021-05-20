@@ -193,13 +193,13 @@ void change_status()
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;              
 
-    new_status.status = "inactivo";
+    new_status.status = status;
     new_status.username = name;
 
     cli_ptn.option = 3;
     cli_ptn.change = &new_status;
-    printf("New Status %s\n",new_status.status);
-    printf("New Name %s\n",new_status.username);
+    // printf("New Status %s\n",new_status.status);
+    // printf("New Name %s\n",new_status.name);
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
