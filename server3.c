@@ -212,7 +212,7 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 void change_user_status()
 {
 	printf("FUCK");
-	printf("status ad %s",status);
+	// printf("status ad %s",status);
 	// pthread_mutex_lock(&clients_mutex);
 	
 	// for (int i = 0; i < MAX_CLIENTS; ++i)
