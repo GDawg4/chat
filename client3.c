@@ -346,8 +346,10 @@ int main(int argc, char **argv)
     void *buf;                                                          
     unsigned len;              
 
-    user_reg.username = name;
-    user_reg.ip = IPbuffer;
+    strcpy(user_reg->username, name);
+    strcpy(user_reg->ip, &IPbuffer);
+    // user_reg.username = name;
+    // user_reg.ip = IPbuffer;
 
     cli_ptn.option = 1;
     cli_ptn.registration = &user_reg;

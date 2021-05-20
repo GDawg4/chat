@@ -1,12 +1,15 @@
 {
     "files.associations": {
         "*.rmd": "markdown",
+        "*.cshtml": "html",
         "compare": "cpp",
         "exception": "cpp",
         "fstream": "cpp",
         "type_traits": "cpp",
         "xmemory": "cpp",
         "xstring": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "system_error": "c",
+        "xlocale": "c"
     }
 }
