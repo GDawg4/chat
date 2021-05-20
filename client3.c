@@ -329,6 +329,14 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    char *ip_buffer;
+
+    ip_buffer = inet_ntoa(*((struct in_addr*)
+                           host->h_addr_list[0]));
+    printf("Host IP: %s", ip_buffer);
+
+
+
     // Send name
     send(sockfd, name, 32, 0);
 
