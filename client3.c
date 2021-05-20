@@ -290,7 +290,15 @@ void recv_msg_handler()
                     break;
                 //Change Status Response
                 case 3:
-                    printf("2\n");
+                    if (code == 200){
+                        //Print Success Message
+                        printf("%s\n", server_res->servermessage);
+                    }
+                    else if (code == 500)
+                    {
+                        //Print Error Message
+                        printf("%s\n", server_res->servermessage);
+                    }
                     break;
                 //Messages Response
                 case 4:

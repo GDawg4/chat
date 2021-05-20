@@ -211,7 +211,6 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender, i
 /* Change User Status*/
 void change_user_status(client_t *client , char *status , char *username)
 {
-	printf("FUCK\n");
 	
 	pthread_mutex_lock(&clients_mutex);
 	
@@ -229,25 +228,21 @@ void change_user_status(client_t *client , char *status , char *username)
 				pthread_mutex_lock(&clients_mutex);
 
 
-				printf("Status %s \n",clients[i]->status);
-				printf("User %s \n",clients[i]->name);
 				//send message to everyone that someone changed status
 				char buff_out2[BUFFER_SZ];
-				printf("FUCK ENDddddd\n");
 				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
 				printf("Chat General %s has changed to status %s\n", username, status);
 				
 				pthread_mutex_unlock(&clients_mutex);
 				broadcast_message(buff_out2, client);
 				pthread_mutex_lock(&clients_mutex);
-				
-
+				pthread_mutex_unlock(&clients_mutex);
+				return;
 			}
 		}
 	}
 
 	
-	printf("FUCK END\n");
 
 	pthread_mutex_unlock(&clients_mutex);
 	sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
