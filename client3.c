@@ -228,7 +228,7 @@ void recv_msg_handler()
             // {
                 //Get Response Option
                 int option = (server_res->option);
-                printf('Option: %d\n',option);
+                // printf('Option: %d\n',option);
                 switch (option)
                 {
                 //User Register Response
