@@ -64,35 +64,27 @@ void send_msg_handler() {
 void broadcast_message() {
   char message[LENGTH] = {};
 	char buffer[LENGTH + 32] = {};
-
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
   scanf("%s", &message);
-  str_trim_lf(message, LENGTH);
+  // str_trim_lf(message, LENGTH);
   
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
   unsigned len;                  // Length of serialized data
-  printf("%s\n", message);
   msg.message = message;
   msg.recipient = "everyone";
   msg.sender = name;
  
   cli_ptn.messagecommunication = &msg;
-  cli_ptn.option = 2;
-  printf("Options %d\n", (cli_ptn.option));
-  //  len = chat__message_communication__get_packed_size(&msg);
-  // buf = malloc(len);
-  // chat__message_communication__pack(&msg,buf);
+  cli_ptn.option = 1;
+
+  
   len = chat__client_petition__get_packed_size(&cli_ptn);
   buf = malloc(len);
   chat__client_petition__pack(&cli_ptn,buf);
   
-  // fprintf(stderr,"Writing %d serialized bytes\n",len); // See the length of message
-  // fwrite(buf,strlen(buf),1,stdout); // Write to stdout to allow direct command line piping
-  
-
 
   if (strcmp(message, "exit") == 0) {
     return;
