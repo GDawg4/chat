@@ -223,9 +223,12 @@ void change_user_status(client_t *client , char *status , char *username)
 			{
 				
 				strcpy(clients[i]->status, status);
-				
+
+				pthread_mutex_unlock(&clients_mutex);
 				sendSuccessServerResponse("Status changed succesfully.",client,3);
-				
+				pthread_mutex_lock(&clients_mutex);
+
+
 				printf("Status %s \n",clients[i]->status);
 				printf("User %s \n",clients[i]->name);
 				//send message to everyone that someone changed status
@@ -233,7 +236,10 @@ void change_user_status(client_t *client , char *status , char *username)
 				printf("FUCK ENDddddd\n");
 				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
 				printf("Chat General %s has changed to status %s\n", username, status);
+				
+				pthread_mutex_unlock(&clients_mutex);
 				broadcast_message(buff_out2, client);
+				pthread_mutex_lock(&clients_mutex);
 				
 
 			}
