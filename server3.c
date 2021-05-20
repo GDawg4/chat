@@ -463,8 +463,8 @@ void *handle_client(void *arg)
 						break;
 					case 3:
 						printf("Opcion 33\n");
-						printf("CliPtn %s\n",cli_ptn->change->status);
-						printf("Opcion 3\n");
+						// printf("CliPtn %s\n",cli_ptn->change->status);
+						// printf("Opcion 3\n");
 						// printf("CliPtn %s\n",cli_ptn);
 						
 
@@ -474,9 +474,9 @@ void *handle_client(void *arg)
 						// 	fprintf(stderr, "Error message received was null\n");
 						// 	break;
 						// }
-						// printf("Status %s",user_status->status);
-						// printf("Username %s",user_status->username);
-						// change_user_status(cli,user_status->status,user_status->username);
+						printf("Status %s",cli_ptn->change->status);
+						printf("Username %s",cli_ptn->change->username);
+						change_user_status(cli,cli_ptn->change->status,cli_ptn->change->username);
 						break;
 					case 4:
 
