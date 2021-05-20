@@ -244,7 +244,7 @@ void user_information()
 
     free(buf); // Free the allocated serialized buffer
 
-    bzero(message, LENGTH);
+    bzero(user_name, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
