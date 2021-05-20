@@ -213,30 +213,30 @@ void change_user_status(client_t *client , char *status , char *username)
 {
 	printf("FUCK");
 	printf("status ad %s",status);
-	pthread_mutex_lock(&clients_mutex);
+	// pthread_mutex_lock(&clients_mutex);
 	
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clients[i])
-		{
-			if (strcmp(clients[i]->name, username) == 0)
-			{
+	// for (int i = 0; i < MAX_CLIENTS; ++i)
+	// {
+	// 	if (clients[i])
+	// 	{
+	// 		if (strcmp(clients[i]->name, username) == 0)
+	// 		{
 				
 				
-				strcpy(clients[i]->status, status);
-				sendSuccessServerResponse("Status changed succesfully.",client,3);
-				//send message to everyone that someone changed status
-				char buff_out2[BUFFER_SZ];
-				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
-				printf("Chat General %s has changed to status %s\n", username, status);
-				broadcast_message(buff_out2, client);
+	// 			strcpy(clients[i]->status, status);
+	// 			sendSuccessServerResponse("Status changed succesfully.",client,3);
+	// 			//send message to everyone that someone changed status
+	// 			char buff_out2[BUFFER_SZ];
+	// 			sprintf(buff_out2, "%s has changed to status %s\n", username, status);
+	// 			printf("Chat General %s has changed to status %s\n", username, status);
+	// 			broadcast_message(buff_out2, client);
 				
 
-			}
-		}
-	}
-	pthread_mutex_unlock(&clients_mutex);
-	sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
+	// 		}
+	// 	}
+	// }
+	// pthread_mutex_unlock(&clients_mutex);
+	// sendFailureServerResponse("Trying to change status of user that doesnt exit.", client, 3);
 
 }
 
@@ -463,12 +463,18 @@ void *handle_client(void *arg)
 						break;
 					case 3:
 						printf("Opcion 33\n");
+						// /
+						// // printf("Opcion 3\n");
+						// // printf("CliPtn %s\n",cli_ptn);
 						
-						// char status[BUFFER_SZ];
-						// sprintf(status, "%s", cli_ptn->change->status);
-						// char username[BUFFER_SZ];
-						// sprintf(username, "%s", cli_ptn->change->username);
-						change_user_status(cli,"inactivo","Silvio");
+
+						// // if (user_status == NULL)
+						// // {
+						// // 	fprintf(stderr, "Error message received was null\n");
+						// // 	break;
+						// // }
+						// printf("CliPtn %s\n",cli_ptn->change->username);
+						change_user_status(cli,cli_ptn->change->status,cli_ptn->change->username);
 						break;
 					case 4:
 
