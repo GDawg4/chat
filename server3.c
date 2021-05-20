@@ -52,18 +52,18 @@ void str_trim_lf(char *arr, int length)
 }
 
 
-char* get_ip(struct sockaddr_in addr)
-{	
+// char* get_ip(struct sockaddr_in addr)
+// {	
 
-	char ip[BUFFER_SZ]= {};
-	sprintf(ip,"%d.%d.%d.%d",
-		   addr.sin_addr.s_addr & 0xff,
-		   (addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
-	printf("IP FUNCTION",ip);
-	return ip;
-}
+// 	char ip[BUFFER_SZ]= {};
+// 	sprintf(ip,"%d.%d.%d.%d",
+// 		   addr.sin_addr.s_addr & 0xff,
+// 		   (addr.sin_addr.s_addr & 0xff00) >> 8,
+// 		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
+// 		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+// 	printf("IP FUNCTION",ip);
+// 	return ip;
+// }
 
 /* Add clients to queue */
 void queue_add(client_t *cl)
@@ -324,23 +324,24 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 /* Handle all communication with the client */
 void *handle_client(void *arg)
 {
+	printf("aqui2");
 	char buff_out[BUFFER_SZ];
 	char name[32];
 	int leave_flag = 0;
 
 	cli_count++;
 	client_t *cli = (client_t *)arg;
-
+	printf("aqui3");
 	int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 	Chat__ClientPetition *cli_ptn_register;
 	Chat__UserRegistration *user;
 	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 	int optionRegister = (cli_ptn_register->option);
-	
-	printf("Name %s\n", user->username);
-	printf("optionRegister %d\n", optionRegister);
-	printf("IP %s\n", user->ip);
-	if(optionRegister==1){
+	printf("aqui");
+	// printf("Name %s\n", user->username);
+	// printf("optionRegister %d\n", optionRegister);
+	// printf("IP %s\n", user->ip);
+	if(optionRegister!=1){
 		sendFailureServerResponse("User registration was expected.\n",cli,1);
 		leave_flag = 1;
 	}
