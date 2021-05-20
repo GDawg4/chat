@@ -131,7 +131,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 		{		
 			if (clients[i]->uid != client_sender->uid)
 			{
-				printf("LLego aqui");
+			
 				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 				void *buf; // Buffer to store serialized data
 				unsigned len;
@@ -144,13 +144,11 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
-				printf("LLego aqui send");
+			
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
 						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
 						break;
-					}else{
-						printf("Chat General %s -> %s\n", msg.sender, msg.message);
 					}
 				
 				free(buf);
@@ -197,7 +195,7 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender)
 	pthread_mutex_unlock(&clients_mutex);
 }
 /* Send private message*/
-void send_private_message(char *s, int uidSender, char *receiverName)
+void send_private_message(char *msg_string, client_t *client_sender, char *receiverName)
 {
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -206,11 +204,26 @@ void send_private_message(char *s, int uidSender, char *receiverName)
 		{
 			if (strcmp(clients[i]->name,receiverName)==0)
 			{
-				if (write(clients[i]->sockfd, s, strlen(s)) < 0)
-				{
-					perror("ERROR: write to descriptor failed");
-					break;
-				}
+				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+				void *buf; // Buffer to store serialized data
+				unsigned len;
+				srv_res.option = 4;
+				Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+				msg.message = msg_string;
+				msg.recipient = receiverName;
+				msg.sender = client_sender->name;
+				srv_res.messagecommunication = &msg;
+				len = chat__server_response__get_packed_size(&srv_res);
+				buf = malloc(len);
+				chat__server_response__pack(&srv_res, buf);
+			
+				if (send(clients[i]->sockfd, buf, len, 0) < 0)
+					{
+						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						break;
+					}
+				
+				free(buf);
 			}
 		}
 	}
@@ -221,7 +234,6 @@ void send_private_message(char *s, int uidSender, char *receiverName)
 /* Return response a user*/
 void return_response_to_sender(char *s, int uid)
 {
-	printf("Hey2");
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -357,14 +369,14 @@ void *handle_client(void *arg)
 						{	
 
 							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "Chat General %s -> %s\n", msg->sender, msg->message);
-							printf("Chat General 1 %s -> %s\n", msg->sender, msg->message);
+							sprintf(buff_out2, "%s\n", msg->message);
+							printf("Chat General %s -> %s\n", msg->sender, msg->message);
 							broadcast_message(buff_out2, cli);
 						}else{
 							char buff_out2[BUFFER_SZ];
-							sprintf(buff_out2, "Chat privado %s -> %s\n", msg->sender, msg->message);
+							sprintf(buff_out2, "%s\n", msg->message);
 							printf("Chat Privado %s hacia %s -> %s\n", msg->sender,msg->recipient, msg->message);
-							send_private_message(buff_out2, cli->uid,msg->recipient);
+							send_private_message(buff_out2, cli,msg->recipient);
 						}
 						// Free the unpacked message
 						chat__message_communication__free_unpacked(msg, NULL);
