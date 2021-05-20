@@ -51,13 +51,15 @@ void str_trim_lf(char *arr, int length)
 	}
 }
 
-void print_client_addr(struct sockaddr_in addr)
-{
-	printf("%d.%d.%d.%d",
+char* get_client_ip(struct sockaddr_in addr)
+{	
+	char ip;
+	sprintf(ip,"%d.%d.%d.%d",
 		   addr.sin_addr.s_addr & 0xff,
 		   (addr.sin_addr.s_addr & 0xff00) >> 8,
 		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
 		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+	return ip;
 }
 
 /* Add clients to queue */
@@ -147,7 +149,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 			
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
-						sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						sendFailureServerResponse("Error sending broadcast message.", client_sender,0);
 						break;
 					}
 				
@@ -156,7 +158,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 		}
 	}
 	pthread_mutex_unlock(&clients_mutex);
-	sendSuccessServerResponse("Message sent succesfully", client_sender);
+	// sendSuccessServerResponse("Message sent succesfully", client_sender);
 }
 
 void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
@@ -177,7 +179,7 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-void sendFailureServerResponse(char *failure_message, client_t *client_sender)
+void sendFailureServerResponse(char *failure_message, client_t *client_sender, int option)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -187,7 +189,9 @@ void sendFailureServerResponse(char *failure_message, client_t *client_sender)
 
 	srv_res.code = 500;
 	srv_res.servermessage = failure_message;
-
+	if(option!=0){
+		srv_res.option = option;
+	}
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
 	chat__server_response__pack(&srv_res, buf);
@@ -274,6 +278,29 @@ int check_is_name_available_in_clients(char *name, int uid)
 	return 1;
 }
 
+int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
+{
+	pthread_mutex_lock(&clients_mutex);
+
+	
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{	
+			
+			if (clients[i]->uid != uid && clientes[i]->address==addr)
+			{
+				
+					pthread_mutex_unlock(&clients_mutex);
+					return 0;
+				
+			}
+		}
+	}
+	pthread_mutex_unlock(&clients_mutex);
+	return 1;
+}
+
 /* Handle all communication with the client */
 void *handle_client(void *arg)
 {
@@ -283,32 +310,44 @@ void *handle_client(void *arg)
 
 	cli_count++;
 	client_t *cli = (client_t *)arg;
-
-	// Name
-	if (recv(cli->sockfd, name, 32, 0) <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1)
+	
+	int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
+	Chat__ClientPetition *cli_ptn_register;
+	Chat__UserRegistration *user;
+	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
+	int optionRegister = (cli_ptn_register->option);
+	name = user.username;
+	if(optionRegister==1){
+		sendFailureServerResponse("User registration was expected.\n",cli,1);
+		leave_flag = 1;
+	}
+	if (receive <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1))
 	{
-		printf("Didn't enter the name.\n");
+		sendFailureServerResponse("Name must be between 2 and 32 characters.\n",cli,1);
 		leave_flag = 1;
 	}
 	else
 	{
 
-		if (check_is_name_available_in_clients(name, cli->uid))
+		if (check_is_name_available_in_clients(name, cli->uid)==0)
 		{
+			leave_flag = 1;
+			sendFailureServerResponse("Client name already exists. Use a different name\n",cli,1);
+		}
+		if (check_is_ip_available_in_clients(cli->uid, cli->address)==0)
+		{
+			leave_flag = 1;
+			sendFailureServerResponse("Client IP already exists. Unable to connect\n",cli,1);
+		}
+		if(leave_flag==0){
 			strcpy(cli->name, name);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
 			broadcast_message(buff_out, cli);
 		}
-		else
-		{
-			leave_flag = 1;
-			printf("Client name already exists.\n");
-			return_response_to_sender("Client name already exists.", cli->uid);
-		}
 	}
 
-	//bzero(buff_out, BUFFER_SZ);
+	bzero(buff_out, BUFFER_SZ);
 
 	while (1)
 	{
@@ -433,7 +472,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	char *ip = "127.0.0.1";
+	
 	int port = atoi(argv[1]);
 	int option = 1;
 	int listenfd = 0, connfd = 0;
@@ -481,7 +520,7 @@ int main(int argc, char **argv)
 		if ((cli_count + 1) == MAX_CLIENTS)
 		{
 			printf("Max clients reached. Rejected: ");
-			print_client_addr(cli_addr);
+			// print_client_addr(cli_addr);
 			printf(":%d\n", cli_addr.sin_port);
 			close(connfd);
 			continue;
