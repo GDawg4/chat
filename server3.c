@@ -455,7 +455,7 @@ void *handle_client(void *arg)
 	else
 	{
 		
-		if (strcmp(name,'everyone')==0)
+		if (strcmp(name,"everyone")==0)
 		{
 			sendFailureServerResponse("El nombre everyone se encuentra reservado. Utiliza otro nombre.\n", cli, 1);
 			leave_flag = 1;
