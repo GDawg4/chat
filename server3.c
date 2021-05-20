@@ -547,7 +547,8 @@ void *handle_client(void *arg)
 					chat__message_communication__free_unpacked(msg, NULL);
 					break;
 				case 5:
-					get_user_information_request(cli, cli_ptn->users->user);
+					printf("User %s\n",cli_ptn->users->user);
+					// get_user_information_request(cli, cli_ptn->users->user);
 					break;
 				default:
 					break;
