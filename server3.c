@@ -537,6 +537,7 @@ int main(int argc, char **argv)
 
 		/* Add client to the queue and fork thread */
 		queue_add(cli);
+		printf("Aqui");
 		pthread_create(&tid, NULL, &handle_client, (void *)cli);
 
 		/* Reduce CPU usage */
