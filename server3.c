@@ -222,14 +222,17 @@ void change_user_status(client_t *client , char *status , char *username)
 			if (strcmp(clients[i]->name, username) == 0)
 			{
 				
+				strcpy(clients[i]->status, status);
+				
+				sendSuccessServerResponse("Status changed succesfully.",client,3);
+				
 				printf("Status %s \n",clients[i]->status);
 				printf("User %s \n",clients[i]->name);
-				sendSuccessServerResponse("Status changed succesfully.",client,3);
 				//send message to everyone that someone changed status
-				char buff_out2[BUFFER_SZ];
-				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
-				printf("Chat General %s has changed to status %s\n", username, status);
-				broadcast_message(buff_out2, client);
+				// char buff_out2[BUFFER_SZ];
+				// sprintf(buff_out2, "%s has changed to status %s\n", username, status);
+				// printf("Chat General %s has changed to status %s\n", username, status);
+				// broadcast_message(buff_out2, client);
 				
 
 			}
