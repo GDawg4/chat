@@ -329,9 +329,9 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    char ip_buffer;
-    ip_buffer = "3.142.76.26";
-    printf("ip %s ",ip_buffer);
+    char *ip_client;
+    ip_client = "3.142.76.26";
+    printf("ip %s ",ip_client);
 
 
     // Send name
