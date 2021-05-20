@@ -25,6 +25,28 @@ void str_overwrite_stdout() {
   fflush(stdout);
 }
 
+char* scan_line(char* buffer, int buffer_size);
+
+char* scan_line(char* buffer, int buffer_size) {
+   char* p = buffer;
+   int count = 0;
+   do {
+       char c;
+       scanf("%c", &c); // scan a single character
+       // break on end of line, string terminating NUL, or end of file
+       if (c == '\r' || c == '\n' || c == 0 || c == EOF) {
+           *p = 0;
+           break;
+       }
+       *p++ = c; // add the valid character into the buffer
+   } while (count < buffer_size - 1);  // don't overrun the buffer
+   // ensure the string is null terminated
+   buffer[buffer_size - 1] = 0;
+   return buffer;
+}
+
+#define MAX_SCAN_LENGTH 1024
+
 void str_trim_lf (char* arr, int length) {
   int i;
   for (i = 0; i < length; i++) { // trim \n
@@ -66,10 +88,12 @@ void broadcast_message() {
 	char buffer[LENGTH + 32] = {};
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
+  scan_line(message, LENGTH);
+  printf("got: \"%s\"\n\n", s);
   // scanf("%s", &message);
-  scanf ("%m[^\n]s",&message);
+  
   // str_trim_lf(message, LENGTH);
-  printf ("%s\n",name);
+  
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
