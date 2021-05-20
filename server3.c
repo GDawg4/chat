@@ -227,8 +227,8 @@ void change_user_status(client_t *client , char *status , char *username)
 				sendSuccessServerResponse("Status changed succesfully.",client,3);
 				//send message to everyone that someone changed status
 				char buff_out2[BUFFER_SZ];
-				sprintf(buff_out2, "%s has changed to status\n", username, status);
-				printf("Chat General %s has changed to status\n", username, status);
+				sprintf(buff_out2, "%s has changed to status %s\n", username, status);
+				printf("Chat General %s has changed to status %s\n", username, status);
 				broadcast_message(buff_out2, client);
 				
 
