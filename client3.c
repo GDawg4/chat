@@ -262,13 +262,13 @@ void recv_msg_handler()
             }
             else if (code == 200 && option==0){
                 //Print Error Message
-                printf("%s", server_res->servermessage);
+                printf("%s\n", server_res->servermessage);
                 
             }
             else if (code == 500 && option==0)
             {
                 //Print Error Message
-                printf("%s", server_res->servermessage);
+                printf("%s\n", server_res->servermessage);
             }
         }
         else if (receive == 0)
