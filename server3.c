@@ -228,15 +228,18 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 			
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
-						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						sendFailureServerResponse("Error sending broadcast message. User is no longer connected", client_sender);
 						break;
+					}else{
+						pthread_mutex_unlock(&clients_mutex);
+						return;
 					}
 				
 				free(buf);
 			}
 		}
 	}
-
+	sendFailureServerResponse("Trying to send private message to user that doesnt exit.", client_sender);
 	pthread_mutex_unlock(&clients_mutex);
 }
 
