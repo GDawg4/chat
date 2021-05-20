@@ -222,10 +222,13 @@ void recv_msg_handler()
 
             //Get Response Code
             int code = server_res->code;
+            printf('Message: %d\n',server_res->servermessage);
+            printf('Code: %d\n',code);
             // if (code == 200)
             // {
                 //Get Response Option
                 int option = (server_res->option);
+                printf('Option: %d\n',option);
                 switch (option)
                 {
                 //User Register Response
@@ -243,14 +246,14 @@ void recv_msg_handler()
                 //Messages Response
                 case 4:
                     msg = server_res->messagecommunication;
-                    
+
                     if (strcmp(msg->recipient, "everyone") == 0)
                     {
                         printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
                     }
                     else
                     {
-                        printf("Chat Privado recibido de %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
+                        printf("Chat Privado enviado por %s -> %s\n", msg->sender, msg->message);
                     }
                     break;
                 //User Information Response
