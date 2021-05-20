@@ -330,9 +330,11 @@ int main(int argc, char **argv)
     }
 
     char *ip_buffer;
+    char hostbuffer[256];
 
+    host_entry = gethostbyname(hostbuffer);
     ip_buffer = inet_ntoa(*((struct in_addr*)
-                           host->h_addr_list[0]));
+                           host_entry->h_addr_list[0]));
     printf("Host IP: %s", ip_buffer);
 
 
