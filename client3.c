@@ -89,7 +89,8 @@ void broadcast_message() {
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
   scan_line(message, LENGTH);
-  printf("got: \"%s\"\n\n", s);
+  printf("got: \"%s\"\n\n", &message);
+  printf("Got: \"%s\"\n\n", message);
   // scanf("%s", &message);
   
   // str_trim_lf(message, LENGTH);
