@@ -86,10 +86,6 @@ void broadcast_message() {
   len = chat__client_petition__get_packed_size(&cli_ptn);
   buf = malloc(len);
   chat__client_petition__pack(&cli_ptn,buf);
-  
-
-  
-
 
   if (strcmp(message, "exit") == 0) {
     return;
@@ -200,8 +196,64 @@ void recv_msg_handler() {
   while (1) {
 		int receive = recv(sockfd, message, LENGTH, 0);
     if (receive > 0) {
-      printf("%s", message);
-      str_overwrite_stdout();
+      
+			Chat__ServerResponse *server_res;
+      Chat__MessageCommunication *msg;
+
+      server_res = chat__server_response__unpack(NULL, strlen(receive), receive);
+
+      if (server_res->has_code)
+      {
+        //Get Response Code
+        int code = server_res->code;
+        if (code == 200) 
+        {
+          if (server_res->has_option) 
+          {
+            //Get Response Option
+            int option = (server_res->option);
+            switch (option)
+            {
+              //User Register Response
+              case 1: 
+                broadcast_message();
+                break;
+              //Connected User Response
+              case 2: 
+                private_message();
+                break;
+              //Change Status Response
+              case 3: 
+                printf("3\n"); 
+                break;
+              //Messages Response
+              case 4: 
+						    msg = cli_ptn->messagecommunication;
+                if (strcmp(msg->recipient, "everyone") == 0)
+                {	
+                  printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
+                }else{
+                  printf("Chat Privado recibido de %s hacia %s -> %s\n", msg->sender,msg->recipient, msg->message);
+                }
+                break;
+              //User Information Response
+              case 5: 
+                printf("5\n"); 
+                break;
+              default: 
+                break;
+            }  
+          }
+        } else if (code == 200)
+        {
+          //Print Error Message
+          printf("%s", server_res->servermessage);
+          str_overwrite_stdout();
+        }
+        
+      }
+
+      
     } else if (receive == 0) {
 			break;
     } else {
