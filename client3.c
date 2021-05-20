@@ -244,7 +244,7 @@ void recv_msg_handler() {
                 break;
             }  
           }
-        } else if (code == 200)
+        } else if (code == 500)
         {
           //Print Error Message
           printf("%s", server_res->servermessage);
