@@ -460,14 +460,14 @@ void *handle_client(void *arg)
 						break;
 					case 2:
 						
+					
+						break;
+					case 3:
+						// printf("Opcion 2\n");
+					
 						char buff_out[BUFFER_SZ];
 						sprintf(buff_out, "Hola a todos\n");
 						broadcast_message(buff_out,cli);
-						break;
-					case 3:
-						printf("Opcion 2\n");
-					
-						
 						
 						break;
 					case 4:
