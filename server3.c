@@ -214,51 +214,52 @@ void get_user_information_request(client_t *client, char *username)
 {
 
 	pthread_mutex_lock(&clients_mutex);
-	if(strcmp('everyone',username)==0){
-		sendFailureServerResponse('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n',client,5);
-	}
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clients[i])
-		{
-			if (strcmp(clients[i]->name, username) == 0)
-			{
+	printf("Username %s\n",username);
+	// if(strcmp('everyone',username)==0){
+	// 	sendFailureServerResponse('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n',client,5);
+	// }
+	// for (int i = 0; i < MAX_CLIENTS; ++i)
+	// {
+	// 	if (clients[i])
+	// 	{
+	// 		if (strcmp(clients[i]->name, username) == 0)
+	// 		{
 
 				
 
-				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
-				void *buf; // Buffer to store serialized data
-				unsigned len;
-				srv_res.option = 5;
-				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
-				printf("aqui");
-				// char ip[BUFFER_SZ];
-				// sprintf(ip, "%d.%d.%d.%d",
-				// 	clients[i]->address.sin_addr.s_addr & 0xff,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
-				// 	(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-				// //Set user info
-				// user_info.status = clients[i]->status;
-				// user_info.username = clients[i]->name;
-				// user_info.ip = ip;
-				// srv_res.userinforesponse = &user_info;
-				// srv_res.code = 200;
-				// len = chat__server_response__get_packed_size(&srv_res);
-				// buf = malloc(len);
-				// chat__server_response__pack(&srv_res, buf);
-				// send(client, buf, len, 0);
-				// pthread_mutex_unlock(&clients_mutex);
-				// free(buf);
-				// return;
+	// 			Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+	// 			void *buf; // Buffer to store serialized data
+	// 			unsigned len;
+	// 			srv_res.option = 5;
+	// 			Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
+	// 			printf("aqui");
+	// 			// char ip[BUFFER_SZ];
+	// 			// sprintf(ip, "%d.%d.%d.%d",
+	// 			// 	clients[i]->address.sin_addr.s_addr & 0xff,
+	// 			// 	(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+	// 			// 	(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+	// 			// 	(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+	// 			// //Set user info
+	// 			// user_info.status = clients[i]->status;
+	// 			// user_info.username = clients[i]->name;
+	// 			// user_info.ip = ip;
+	// 			// srv_res.userinforesponse = &user_info;
+	// 			// srv_res.code = 200;
+	// 			// len = chat__server_response__get_packed_size(&srv_res);
+	// 			// buf = malloc(len);
+	// 			// chat__server_response__pack(&srv_res, buf);
+	// 			// send(client, buf, len, 0);
+	// 			// pthread_mutex_unlock(&clients_mutex);
+	// 			// free(buf);
+	// 			// return;
 				
-			}
-		}
-	}
+	// 		}
+	// 	}
+	// }
 
 	pthread_mutex_unlock(&clients_mutex);
 
-	sendFailureServerResponse("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
+	// sendFailureServerResponse("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
 }
 /* Change User Status*/
 void change_user_status(client_t *client, char *status, char *username)
