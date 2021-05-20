@@ -331,6 +331,7 @@ int main(int argc, char **argv)
 
     char *ip_buffer;
     char hostbuffer[256];
+    struct hostent *host_entry;
 
     host_entry = gethostbyname(hostbuffer);
     ip_buffer = inet_ntoa(*((struct in_addr*)
