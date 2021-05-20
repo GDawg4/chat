@@ -158,10 +158,10 @@ void private_message()
 }
 
 
-void private_message()
+void change_status()
 {
     int choice_status;
-    char status[LENGTH];
+    char *status;
     char buffer[LENGTH + 32] = {};
     char temp;
     scanf("%c", &temp);
@@ -207,7 +207,6 @@ void private_message()
 
     free(buf); // Free the allocated serialized buffer
 
-    bzero(status, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
