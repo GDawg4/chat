@@ -228,7 +228,7 @@ void recv_msg_handler() {
                 break;
               //Messages Response
               case 4: 
-						    msg = cli_ptn->messagecommunication;
+						    msg = server_res->messagecommunication;
                 if (strcmp(msg->recipient, "everyone") == 0)
                 {	
                   printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
