@@ -342,7 +342,7 @@ void *handle_client(void *arg)
 	Chat__UserRegistration *user;
 	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 	int optionRegister = (cli_ptn_register->option);
-	user = cli_ptn_register->users;
+	user = cli_ptn_register->registration;
 	printf("Name %s\n", user->username);
 	printf("optionRegister %d\n", optionRegister);
 	printf("IP %s\n", user->ip);
