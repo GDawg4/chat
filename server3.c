@@ -331,31 +331,47 @@ void *handle_client(void *arg)
 	cli_count++;
 	client_t *cli = (client_t *)arg;
 
-	// Name
-	if (recv(cli->sockfd, name, 32, 0) <= 0 || strlen(name) < 2 || strlen(name) >= 32 - 1)
-	{
-		printf("Didn't enter the name.\n");
+	int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
+	Chat__ClientPetition *cli_ptn_register;
+	Chat__UserRegistration *user;
+	cli_ptn_register = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
+	int optionRegister = (cli_ptn_register->option);
+	
+	printf("Name %s\n", user->username);
+	printf("optionRegister %d\n", optionRegister);
+	printf("IP %s\n", user->ip);
+	if(optionRegister==1){
+		sendFailureServerResponse("User registration was expected.\n",cli,1);
 		leave_flag = 1;
 	}
-	else
+	if (receive <= 0 || strlen(user->username) < 2 || strlen(user->username) >= 32 - 1)
+	{
+		sendFailureServerResponse("Name must be between 2 and 32 characters.\n",cli,1);
+		leave_flag = 1;
+	}else
 	{
 
-		if (check_is_name_available_in_clients(name, cli->uid))
+		if (check_is_name_available_in_clients(user->username, cli->uid)==0)
 		{
-			strcpy(cli->name, name);
+			leave_flag = 1;
+			sendFailureServerResponse("Client name already exists. Use a different name\n",cli,1);
+		}
+		if (check_is_ip_available_in_clients(cli->uid, cli->address)==0)
+		{
+			leave_flag = 1;
+			sendFailureServerResponse("Client IP already exists. Unable to connect\n",cli,1);
+		}
+		if(leave_flag==0){
+			strcpy(cli->name, user->username);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
 			broadcast_message(buff_out, cli);
 		}
-		else
-		{
-			leave_flag = 1;
-			printf("Client name already exists.\n");
-			return_response_to_sender("Client name already exists.", cli->uid);
-		}
 	}
 
-	//bzero(buff_out, BUFFER_SZ);
+	
+
+	bzero(buff_out, BUFFER_SZ);
 
 	while (1)
 	{

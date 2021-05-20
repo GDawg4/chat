@@ -53,13 +53,12 @@ void str_trim_lf(char *arr, int length)
 
 char* get_ip(struct sockaddr_in addr)
 {	
-	char ip[BUFFER_SZ]= {};
+	char ip;
 	sprintf(ip,"%d.%d.%d.%d",
 		   addr.sin_addr.s_addr & 0xff,
 		   (addr.sin_addr.s_addr & 0xff00) >> 8,
 		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
 		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
-	printf("IP FUNCTION",ip);
 	return ip;
 }
 
@@ -162,7 +161,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 	// sendSuccessServerResponse("Message sent succesfully", client_sender);
 }
 
-void sendSuccessServerResponse(char *succces_message, client_t *client_sender, int option)
+void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
 {
 	pthread_mutex_lock(&clients_mutex);
 
@@ -172,9 +171,7 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender, i
 
 	srv_res.code = 200;
 	srv_res.servermessage = succces_message;
-	if(option!=0){
-		srv_res.option=option;
-	}
+
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
 	chat__server_response__pack(&srv_res, buf);
