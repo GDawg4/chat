@@ -64,7 +64,7 @@ void print_client_addr(struct sockaddr_in addr)
 void queue_add(client_t *cl)
 {
 	pthread_mutex_lock(&clients_mutex);
-	strcpy(cli->status, "activo");
+	strcpy(cl->status, "activo");
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (!clients[i])
