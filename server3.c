@@ -52,7 +52,7 @@ void str_trim_lf(char *arr, int length)
 }
 
 
-char* get_ip(struct sockaddr_in addr)
+char get_ip(struct sockaddr_in addr)
 {	
 	char ip;
 	sprintf(ip,"%d.%d.%d.%d",
@@ -484,7 +484,7 @@ int main(int argc, char **argv)
 		if ((cli_count + 1) == MAX_CLIENTS)
 		{
 			printf("Max clients reached. Rejected: ");
-			// print_client_addr(cli_addr);
+			
 			printf(":%d\n", cli_addr.sin_port);
 			close(connfd);
 			continue;
