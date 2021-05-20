@@ -210,6 +210,44 @@ void change_status()
     bzero(buffer, LENGTH + 32);
 }
 
+void user_information()
+{
+    char user_name[LENGTH] = {};
+    char buffer[LENGTH + 32] = {};
+    char temp;
+    scanf("%c", &temp);
+    printf("Ingresa el nombre del usuario de quien deseas ver la información.\n");
+    scanf("%[^\n]", &user_name);
+
+    Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
+    Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
+    void *buf;                                                          // Buffer to store serialized data
+    unsigned len;                                                       // Length of serialized data
+    // printf("%s\n", message);
+    user_request.user = user_name;
+
+    cli_ptn.user = &user_request;
+    cli_ptn.option = 5;
+
+    len = chat__client_petition__get_packed_size(&cli_ptn);
+    buf = malloc(len);
+    chat__client_petition__pack(&cli_ptn, buf);
+
+    if (strcmp(message, "exit") == 0)
+    {
+        return;
+    }
+    else
+    {
+        send(sockfd, buf, len, 0);
+    }
+
+    free(buf); // Free the allocated serialized buffer
+
+    bzero(message, LENGTH);
+    bzero(buffer, LENGTH + 32);
+}
+
 void client_menu_handler()
 {
 
@@ -239,7 +277,7 @@ void client_menu_handler()
             change_status();
             break;
         case 4:
-            printf("4\n");
+            user_information();
             break;
         case 5:
             printf("5\n");
@@ -270,6 +308,7 @@ void recv_msg_handler()
         {
             Chat__ServerResponse *server_res;
             Chat__MessageCommunication *msg;
+            Chat__UserInfo *user_info;
 
             server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
@@ -315,7 +354,16 @@ void recv_msg_handler()
                     break;
                 //User Information Response
                 case 5:
-                    printf("5\n");
+                    user_info = server_res->userinforesponse;
+                     if (code == 200)
+                    {
+                        printf("Usuario: %s \nStatus: %s\nIP: %s\n", user_info->username, user_info->status, user_info->ip);
+                    }
+                    else if (code == 500)
+                    {
+                        //Print Error Message
+                        printf("%s\n", server_res->servermessage);
+                    }
                     break;
                 default:
                     break;
