@@ -85,26 +85,27 @@ void broadcast_message()
     Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;                                                       // Length of serialized data
-    // printf("%s\n", message);
+    printf('enviado0');
     msg.message = message;
     msg.recipient = "everyone";
     msg.sender = name;
-
+    printf('enviado');
     cli_ptn.messagecommunication = &msg;
     cli_ptn.option = 4;
-
+    printf('enviado1');
     len = chat__client_petition__get_packed_size(&cli_ptn);
+    printf('enviado2');
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
-
+    printf('enviado3');
     if (strcmp(message, "exit") == 0)
     {
-        printf('exit');
+        
         return;
     }
     else
     {
-        printf('enviado');
+        
         send(sockfd, buf, len, 0);
     }
 
@@ -344,12 +345,12 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    pthread_t recv_msg_thread;
-    if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
-    {
-        printf("ERROR: pthread\n");
-        return EXIT_FAILURE;
-    }
+    // pthread_t recv_msg_thread;
+    // if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
+    // {
+    //     printf("ERROR: pthread\n");
+    //     return EXIT_FAILURE;
+    // }
 
     while (1)
     {
