@@ -68,9 +68,8 @@ void broadcast_message() {
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   scanf("%c",&temp);
   str_overwrite_stdout();
-  // fgets(message, LENGTH, stdin);
   scanf("%[^\n]", &message);
-  // str_trim_lf(message, LENGTH);
+  
   
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
@@ -82,23 +81,64 @@ void broadcast_message() {
   msg.sender = name;
  
   cli_ptn.messagecommunication = &msg;
-  cli_ptn.option = 2;
-  //  len = chat__message_communication__get_packed_size(&msg);
-  // buf = malloc(len);
-  // chat__message_communication__pack(&msg,buf);
+  cli_ptn.option = 4;
+
   len = chat__client_petition__get_packed_size(&cli_ptn);
   buf = malloc(len);
   chat__client_petition__pack(&cli_ptn,buf);
   
-  // fprintf(stderr,"Writing %d serialized bytes\n",len); // See the length of message
-  // fwrite(buf,strlen(buf),1,stdout); // Write to stdout to allow direct command line piping
+
   
 
 
   if (strcmp(message, "exit") == 0) {
     return;
   } else {
-    // sprintf(buffer, "%s\n", message);
+    send(sockfd, buf, len, 0);
+  }
+  
+  free(buf); // Free the allocated serialized buffer
+
+  bzero(message, LENGTH);
+  bzero(buffer, LENGTH + 32);
+}
+
+void private_message() {
+  char message[LENGTH] = {};
+  char user_name[LENGTH] = {};
+	char buffer[LENGTH + 32] = {};
+  char temp;
+  scanf("%c",&temp);
+  printf("Ingresa el nombre del usuario a quien deseas enviarle el mensaje.\n");
+  scanf("%[^\n]",&user_name);
+  printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
+  str_overwrite_stdout();
+  scanf("%[^\n]", &message);
+  
+  
+  Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
+  Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+  void *buf;                     // Buffer to store serialized data
+  unsigned len;                  // Length of serialized data
+  // printf("%s\n", message);
+  msg.message = message;
+  msg.recipient = user_name;
+  msg.sender = name;
+ 
+  cli_ptn.messagecommunication = &msg;
+  cli_ptn.option = 4;
+
+  len = chat__client_petition__get_packed_size(&cli_ptn);
+  buf = malloc(len);
+  chat__client_petition__pack(&cli_ptn,buf);
+  
+
+  
+
+
+  if (strcmp(message, "exit") == 0) {
+    return;
+  } else {
     send(sockfd, buf, len, 0);
   }
   
