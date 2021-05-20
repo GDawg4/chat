@@ -237,7 +237,7 @@ void get_user_information_request(client_t *client, char *username)
 				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
 				printf("aqui\n");
 				char ip[BUFFER_SZ];
-				sprintf(ip, "%d.%d.%d.%d",
+				sprintf(user_info.ip, "%d.%d.%d.%d",
 					clients[i]->address.sin_addr.s_addr & 0xff,
 					(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
 					(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
@@ -247,12 +247,12 @@ void get_user_information_request(client_t *client, char *username)
 				// user_info.status = clients[i]->status;
 				// user_info.username = clients[i]->name;
 				// user_info.ip = ip;
-				strcpy(user_info.status, clients[i]->status;);
-				strcpy(user_info.username, clients[i]->name);
-				strcpy(user_info.ip, ip);
-				printf("status %d\n",user_info.ip);
+				// strcpy(user_info.status, clients[i]->status;);
+				// strcpy(user_info.username, clients[i]->name);
+				// strcpy(user_info.ip, ip);
+				// printf("status %d\n",user_info.ip);
 				printf("ip %d\n",user_info.status);
-				printf("username %d\n",user_info.username);
+				// printf("username %d\n",user_info.username);
 				srv_res.userinforesponse = &user_info;
 				srv_res.code = 200;
 					printf("aqui2\n");
