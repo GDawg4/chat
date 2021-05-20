@@ -495,16 +495,16 @@ int main(int argc, char **argv)
 		/* Client settings */
 		// char *ip = get_ip(cli_addr);
 		printf("IP AFUERA %d.%d.%d.%d\n",
-		   addr.sin_addr.s_addr & 0xff,
-		   (addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+		   cli_addr.sin_addr.s_addr & 0xff,
+		   (cli_addr.sin_addr.s_addr & 0xff00) >> 8,
+		   (cli_addr.sin_addr.s_addr & 0xff0000) >> 16,
+		   (cli_addr.sin_addr.s_addr & 0xff000000) >> 24);
 		char ip[BUFFER_SZ];
 		sprintf(ip,"IP fff %d.%d.%d.%d",
-		   addr.sin_addr.s_addr & 0xff,
-		   (addr.sin_addr.s_addr & 0xff00) >> 8,
-		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
-		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+		   cli_addr.sin_addr.s_addr & 0xff,
+		   (cli_addr.sin_addr.s_addr & 0xff00) >> 8,
+		   (cli_addr.sin_addr.s_addr & 0xff0000) >> 16,
+		   (cli_addr.sin_addr.s_addr & 0xff000000) >> 24);
 		printf("IP %s\n",ip);
 		client_t *cli = (client_t *)malloc(sizeof(client_t));
 		cli->address = cli_addr;
