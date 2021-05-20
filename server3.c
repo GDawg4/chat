@@ -306,7 +306,7 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
 			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
 			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-			if (clients[i]->uid != uid && strcmp(ip1,ip2))==0)
+			if (clients[i]->uid != uid && strcmp(ip1,ip2)==0)
 			{
 				
 					pthread_mutex_unlock(&clients_mutex);
