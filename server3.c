@@ -247,7 +247,7 @@ void *handle_client(void *arg)
 				{
 
 					Chat__ClientPetition *cli_ptn;
-					
+					Chat__MessageCommunication *msg;
 
 					// Read packed message from standard-input.
 					// Unpack the message using protobuf-c.
@@ -267,7 +267,7 @@ void *handle_client(void *arg)
 						printf("3\n");
 						break;
 					case 4:
-						Chat__MessageCommunication *msg;
+						
 						msg = cli_ptn->messagecommunication;
 						if (msg == NULL)
 						{
