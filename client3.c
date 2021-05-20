@@ -39,6 +39,17 @@ void str_trim_lf(char *arr, int length)
     }
 }
 
+char* get_ip(struct sockaddr_in addr)
+{	
+	char ip;
+	sprintf(ip,"%d.%d.%d.%d",
+		   addr.sin_addr.s_addr & 0xff,
+		   (addr.sin_addr.s_addr & 0xff00) >> 8,
+		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
+		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+	return ip;
+}
+
 void catch_ctrl_c_and_exit(int sig)
 {
     flag = 1;
@@ -331,7 +342,7 @@ int main(int argc, char **argv)
 
     //Get IP
     char hostbuffer[256];
-    char *IPbuffer;
+    char IPbuffer;
     struct hostent *host_entry;
     // To retrieve host information
     host_entry = gethostbyname(hostbuffer);
@@ -339,15 +350,15 @@ int main(int argc, char **argv)
     // To convert an Internet network
     // address into ASCII string
     IPbuffer = inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0]));
-
+    printf("%s",IPbuffer);
     //Create User Registration
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRegistration *user_reg = CHAT__USER_REGISTRATION__INIT; 
     void *buf;                                                          
     unsigned len;              
 
-    strcpy(user_reg->username, name);
-    strcpy(user_reg->ip, &IPbuffer);
+    // strcpy(user_reg->username, name);
+    // strcpy(user_reg->ip, &IPbuffer);
     // user_reg.username = name;
     // user_reg.ip = IPbuffer;
 
