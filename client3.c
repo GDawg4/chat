@@ -465,7 +465,6 @@ int main(int argc, char **argv)
 
     char buff_out[BUFFER_SZ];
     int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
-    printf("Ya paso\n");
     if (receive > 0)
     {
         Chat__ServerResponse *server_res;
