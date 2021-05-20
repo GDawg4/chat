@@ -157,6 +157,60 @@ void private_message()
     bzero(buffer, LENGTH + 32);
 }
 
+
+void private_message()
+{
+    int choice_status;
+    char status[LENGTH];
+    char buffer[LENGTH + 32] = {};
+    char temp;
+    scanf("%c", &temp);
+    printf("Ingresa la opción para cambiar de status:\n");
+    printf("1. activo\n");
+    printf("2. inactivo\n");
+    printf("3. ocupado\n");
+    str_overwrite_stdout();
+    scanf("%[^\n]", &choice_status);
+
+    switch (choice_status)
+    {
+    case 1:
+        status = "activo";
+        break;
+    case 2:
+        status = "inactivo";
+        break;
+    case 3:
+        status = "ocupado";
+        break;
+    default:
+        printf("La opción ingresada es icorrecta\n");
+        return;
+    }
+
+    Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
+    Chat__ChangeStatus new_status = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
+    void *buf;                                                          // Buffer to store serialized data
+    unsigned len;              
+
+    new_status.status = status;
+    new_status.username = name;
+
+    cli_ptn.option = 3;
+    cli_ptn.change = new_status;
+
+    len = chat__client_petition__get_packed_size(&cli_ptn);
+    buf = malloc(len);
+    chat__client_petition__pack(&cli_ptn, buf);
+    send(sockfd, buf, len, 0);
+
+
+    free(buf); // Free the allocated serialized buffer
+
+    bzero(status, LENGTH);
+    bzero(buffer, LENGTH + 32);
+}
+
 void client_menu_handler()
 {
 
@@ -164,7 +218,7 @@ void client_menu_handler()
     {
         int choice;
 
-        printf("Menu\n\n");
+        printf("\nMenu:\n");
         printf("1. Chatear contodos los usuarios (broadcasting).\n");
         printf("2. Enviar y recibir mensajes directos, privados, aparte del chat general.\n");
         printf("3. Cambiar de status.\n");
@@ -183,7 +237,7 @@ void client_menu_handler()
             private_message();
             break;
         case 3:
-            printf("3\n");
+            change_status();
             break;
         case 4:
             printf("4\n");
