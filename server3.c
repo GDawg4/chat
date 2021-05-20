@@ -229,8 +229,10 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
 						sendFailureServerResponse("Error sending broadcast message. User is no longer connected", client_sender,0);
-						break;
+						pthread_mutex_unlock(&clients_mutex);
+						return;
 					}else{
+						printf("Chat Privado %s hacia %s -> %s\n", client_sender->name,receiverName, msg_string);
 						pthread_mutex_unlock(&clients_mutex);
 						return;
 					}
@@ -239,8 +241,9 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 			}
 		}
 	}
-	sendFailureServerResponse("Trying to send private message to user that doesnt exit.", client_sender,0);
 	pthread_mutex_unlock(&clients_mutex);
+	sendFailureServerResponse("Trying to send private message to user that doesnt exit.", client_sender,0);
+	
 }
 
 /* Return response a user*/
@@ -445,7 +448,7 @@ void *handle_client(void *arg)
 						}else{
 							char buff_out2[BUFFER_SZ];
 							sprintf(buff_out2, "%s\n", msg->message);
-							printf("Chat Privado %s hacia %s -> %s\n", msg->sender,msg->recipient, msg->message);
+							
 							send_private_message(buff_out2, cli,msg->recipient);
 						}
 						// Free the unpacked message
