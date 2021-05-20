@@ -170,7 +170,7 @@ void change_status()
     printf("2. inactivo\n");
     printf("3. ocupado\n");
     str_overwrite_stdout();
-    scanf("%[^\n]", &choice_status);
+    scanf("%d", &choice_status);;
 
     switch (choice_status)
     {
