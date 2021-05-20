@@ -484,7 +484,7 @@ int main(int argc, char **argv)
 		if ((cli_count + 1) == MAX_CLIENTS)
 		{
 			printf("Max clients reached. Rejected: ");
-			print_client_addr(cli_addr);
+			// print_client_addr(cli_addr);
 			printf(":%d\n", cli_addr.sin_port);
 			close(connfd);
 			continue;
