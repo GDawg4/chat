@@ -11,7 +11,6 @@
 #include <signal.h>
 #include "new.pb-c.h"
 #define MAX_MSG_SIZE 1024
-// #include "amessage.pb-c.h"
 
 #define MAX_CLIENTS 100
 #define BUFFER_SZ 2048 * 24
@@ -65,7 +64,7 @@ void print_client_addr(struct sockaddr_in addr)
 void queue_add(client_t *cl)
 {
 	pthread_mutex_lock(&clients_mutex);
-	cl->status = "activo";
+	strcpy(cli->status, "activo");
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (!clients[i])
@@ -98,24 +97,24 @@ void queue_remove(int uid)
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-client_t get_client(int uid)
-{
-	pthread_mutex_lock(&clients_mutex);
+// client_t get_client(int uid)
+// {
+// 	pthread_mutex_lock(&clients_mutex);
 
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clients[i])
-		{
-			if (clients[i]->uid == uid)
-			{
-				pthread_mutex_unlock(&clients_mutex);
-				return clients[i];
-			}
-		}
-	}
-	pthread_mutex_unlock(&clients_mutex);
-	return null;
-}
+// 	for (int i = 0; i < MAX_CLIENTS; ++i)
+// 	{
+// 		if (clients[i])
+// 		{
+// 			if (clients[i]->uid == uid)
+// 			{
+// 				pthread_mutex_unlock(&clients_mutex);
+// 				return clients[i];
+// 			}
+// 		}
+// 	}
+// 	pthread_mutex_unlock(&clients_mutex);
+// 	return null;
+// }
 
 /* Send message to all clients except sender */
 void broadcast_message(char *msg_string, client_t *client_sender)
@@ -136,12 +135,12 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 				msg.message = msg_string;
 				msg.recipient = clients[i]->name;
 				msg.sender = client_sender->name;
-				srv_res.messagecommunication = msg;
+				srv_res.messagecommunication = &msg;
 				len = chat__server_response__get_packed_size(&srv_res);
 				buf = malloc(len);
 				chat__server_response__pack(&srv_res, buf);
 
-				if (send(clients[i]->sockfd, buf, len, 0)) < 0)
+				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
 						sendFailureServerResponse("Error sending broadcast message.", client_sender);
 						break;
@@ -167,7 +166,7 @@ void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
 	chat__server_response__pack(&srv_res, buf);
-	send(sockfd, buf, len, 0);
+	send(client_sender->sockfd, buf, len, 0);
 	pthread_mutex_unlock(&clients_mutex);
 }
 
