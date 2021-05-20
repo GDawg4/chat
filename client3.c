@@ -233,7 +233,7 @@ void user_information()
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
 
-    if (strcmp(message, "exit") == 0)
+    if (strcmp(user_name, "exit") == 0)
     {
         return;
     }
