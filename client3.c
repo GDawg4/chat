@@ -196,7 +196,7 @@ void change_status()
     new_status.status = status;
     new_status.username = name;
 
-    cli_ptn.option = 2;
+    cli_ptn.option = 3;
     cli_ptn.change = &new_status;
     //printf("New Status %s\n",cli_ptn.change->status);
     //printf("New Name %s\n",cli_ptn.change->username);

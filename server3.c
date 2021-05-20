@@ -459,7 +459,7 @@ void *handle_client(void *arg)
 						// broadcast_message();
 						break;
 					case 2:
-						printf("2\n");
+						
 						char buff_out[BUFFER_SZ];
 						sprintf(buff_out, "Hola a todos\n");
 						broadcast_message(buff_out,cli);
