@@ -219,7 +219,8 @@ void change_user_status(client_t *client , char *status , char *username)
 			if (strcmp(clients[i]->name, username) == 0)
 			{
 				
-				clients[i]->status = status;
+				
+				strcpy(clients[i]->status, status);
 				sendSuccessServerResponse("Status changed succesfully.",client,3);
 				//send message to everyone that someone changed status
 				char buff_out2[BUFFER_SZ];
