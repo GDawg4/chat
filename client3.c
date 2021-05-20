@@ -103,6 +103,7 @@ void broadcast_message()
     }
     else
     {
+        printf('enviado');
         send(sockfd, buf, len, 0);
     }
 
