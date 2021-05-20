@@ -12,7 +12,7 @@
 #include "new.pb-c.h"
 // #include "amessage.pb-c.h"
 #define MAX_MSG_SIZE 1024
-
+#define BUFFER_SZ 2048 * 24
 #define LENGTH 2048
 
 // Global variables
@@ -37,6 +37,17 @@ void str_trim_lf(char *arr, int length)
             break;
         }
     }
+}
+
+char* get_ip(struct sockaddr_in addr)
+{	
+	char ip;
+	sprintf(ip,"%d.%d.%d.%d",
+		   addr.sin_addr.s_addr & 0xff,
+		   (addr.sin_addr.s_addr & 0xff00) >> 8,
+		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
+		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+	return ip;
 }
 
 void catch_ctrl_c_and_exit(int sig)
@@ -85,27 +96,24 @@ void broadcast_message()
     Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;                                                       // Length of serialized data
-    printf('enviado0');
+    // printf("%s\n", message);
     msg.message = message;
     msg.recipient = "everyone";
     msg.sender = name;
-    printf('enviado');
+
     cli_ptn.messagecommunication = &msg;
     cli_ptn.option = 4;
-    printf('enviado1');
+
     len = chat__client_petition__get_packed_size(&cli_ptn);
-    printf('enviado2');
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
-    printf('enviado3');
+
     if (strcmp(message, "exit") == 0)
     {
-        
         return;
     }
     else
     {
-        
         send(sockfd, buf, len, 0);
     }
 
@@ -211,48 +219,48 @@ void client_menu_handler()
 
 void recv_msg_handler()
 {
-    char message[LENGTH] = {};
+    char buff_out[BUFFER_SZ];
     while (1)
     {
-        int receive = recv(sockfd, message, LENGTH, 0);
+
+        int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
         if (receive > 0)
         {
-
             Chat__ServerResponse *server_res;
             Chat__MessageCommunication *msg;
 
-            server_res = chat__server_response__unpack(NULL, strlen(receive), receive);
+            server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
             //Get Response Code
             int code = server_res->code;
-            if (code == 200)
+            int option = (server_res->option);
+            if (option!=0)
             {
-                //Get Response Option
-                int option = (server_res->option);
                 switch (option)
                 {
                 //User Register Response
                 case 1:
-                    broadcast_message();
+                    printf("%s\n", server_res->servermessage);
                     break;
                 //Connected User Response
                 case 2:
-                    private_message();
+                    printf("2\n");
                     break;
                 //Change Status Response
                 case 3:
-                    printf("3\n");
+                    printf("2\n");
                     break;
                 //Messages Response
                 case 4:
                     msg = server_res->messagecommunication;
+
                     if (strcmp(msg->recipient, "everyone") == 0)
                     {
                         printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
                     }
                     else
                     {
-                        printf("Chat Privado recibido de %s hacia %s -> %s\n", msg->sender, msg->recipient, msg->message);
+                        printf("Chat Privado enviado por %s -> %s\n", msg->sender, msg->message);
                     }
                     break;
                 //User Information Response
@@ -263,11 +271,15 @@ void recv_msg_handler()
                     break;
                 }
             }
-            else if (code == 500)
+            else if (code == 200 && option==0){
+                //Print Error Message
+                printf("%s\n", server_res->servermessage);
+                
+            }
+            else if (code == 500 && option==0)
             {
                 //Print Error Message
-                printf("%s", server_res->servermessage);
-                str_overwrite_stdout();
+                printf("%s\n", server_res->servermessage);
             }
         }
         else if (receive == 0)
@@ -278,7 +290,8 @@ void recv_msg_handler()
         {
             // -1
         }
-        memset(message, 0, sizeof(message));
+        bzero(buff_out, BUFFER_SZ);
+        // memset(message, 0, sizeof(message));
     }
 }
 
@@ -327,8 +340,66 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    // Send name
-    send(sockfd, name, 32, 0);
+    //Get IP
+    char hostbuffer[256];
+    // char ipBuffer;
+    struct hostent *host_entry;
+    // To retrieve host information
+    host_entry = gethostbyname(hostbuffer);
+  
+    // To convert an Internet network
+    // address into ASCII string
+    // ipBuffer = "127.1.0.1";
+    //Create User Registration
+    Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
+    Chat__UserRegistration user = CHAT__USER_REGISTRATION__INIT; 
+    void *buf;                                                          
+    unsigned len;              
+    // Chat__UserRegistration user = &user;
+    // strcpy(user->username, name);
+    // strcpy(user->ip, ipBuffer);
+    user.username = name;
+    user.ip = "127.1.0.1";
+ 
+    cli_ptn.option = 1;
+    cli_ptn.registration = &user;
+    
+    len = chat__client_petition__get_packed_size(&cli_ptn);
+    buf = malloc(len);
+    chat__client_petition__pack(&cli_ptn, buf);
+
+    //Send User Registation
+    send(sockfd, buf, len, 0);
+
+    char buff_out[BUFFER_SZ];
+    int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
+    if (receive > 0)
+    {
+        Chat__ServerResponse *server_res;
+        Chat__MessageCommunication *msg;
+
+        server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
+
+        //Get Response Code
+        int code = server_res->code;
+        int option = (server_res->option);
+        if (code == 200 && option == 1)
+        {
+            printf("%s\n", server_res->servermessage);   
+        }
+        else
+        {
+            //Print Error Message
+            printf("%s\n", server_res->servermessage);
+            return EXIT_FAILURE;
+        }
+    }
+    else
+    {
+        return EXIT_FAILURE;
+    }
+
+    bzero(buff_out, BUFFER_SZ);
 
     printf("=== WELCOME TO THE CHATROOM ===\n");
 
@@ -339,12 +410,12 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    // pthread_t recv_msg_thread;
-    // if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
-    // {
-    //     printf("ERROR: pthread\n");
-    //     return EXIT_FAILURE;
-    // }
+    pthread_t recv_msg_thread;
+    if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
+    {
+        printf("ERROR: pthread\n");
+        return EXIT_FAILURE;
+    }
 
     while (1)
     {
