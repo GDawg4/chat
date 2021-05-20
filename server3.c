@@ -53,7 +53,7 @@ void str_trim_lf(char *arr, int length)
 
 void print_client_addr(struct sockaddr_in addr)
 {
-	printf("%d.%d.%d.%d",
+	printf("IP %d.%d.%d.%d\n",
 		   addr.sin_addr.s_addr & 0xff,
 		   (addr.sin_addr.s_addr & 0xff00) >> 8,
 		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
@@ -488,6 +488,7 @@ int main(int argc, char **argv)
 		}
 
 		/* Client settings */
+		print_client_addr(cli_addr);
 		client_t *cli = (client_t *)malloc(sizeof(client_t));
 		cli->address = cli_addr;
 		cli->sockfd = connfd;
