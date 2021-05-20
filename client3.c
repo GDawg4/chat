@@ -333,9 +333,57 @@ int main(int argc, char **argv)
     ip_client = "3.142.76.26";
     printf("ip %s ",ip_client);
 
+     //Create User Registration
+    Chat__ClientPetition cli_ptn_register = CHAT__CLIENT_PETITION__INIT;
+    Chat__UserRegistration user = CHAT__USER_REGISTRATION__INIT; 
+    void *buf;                                                          
+    unsigned len;              
+    // Chat__UserRegistration user = &user;
+    // strcpy(user->username, name);
+    // strcpy(user->ip, ipBuffer);
+    user.username = name;
+    user.ip = ip_client;
+ 
+    cli_ptn_register.option = 1;
+    cli_ptn_register.registration = &user;
+    
+    len = chat__client_petition__get_packed_size(&cli_ptn_register);
+    buf = malloc(len);
+    chat__client_petition__pack(&cli_ptn_register, buf);
 
-    // Send name
-    send(sockfd, name, 32, 0);
+    //Send User Registation
+    send(sockfd, buf, len, 0);
+
+    char buff_out[BUFFER_SZ];
+    int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
+    if (receive > 0)
+    {
+        Chat__ServerResponse *server_res;
+        Chat__MessageCommunication *msg;
+
+        server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
+
+        //Get Response Code
+        int code = server_res->code;
+        int option = (server_res->option);
+        if (code == 200 && option == 1)
+        {
+            printf("%s\n", server_res->servermessage);   
+        }
+        else
+        {
+            //Print Error Message
+            printf("%s\n", server_res->servermessage);
+            return EXIT_FAILURE;
+        }
+    }
+    else
+    {
+        return EXIT_FAILURE;
+    }
+
+    bzero(buff_out, BUFFER_SZ);
+
 
     printf("=== WELCOME TO THE CHATROOM ===\n");
 
