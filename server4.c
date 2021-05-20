@@ -53,12 +53,13 @@ void str_trim_lf(char *arr, int length)
 
 char* get_ip(struct sockaddr_in addr)
 {	
-	char ip;
+	char ip[BUFFER_SZ]= {};
 	sprintf(ip,"%d.%d.%d.%d",
 		   addr.sin_addr.s_addr & 0xff,
 		   (addr.sin_addr.s_addr & 0xff00) >> 8,
 		   (addr.sin_addr.s_addr & 0xff0000) >> 16,
 		   (addr.sin_addr.s_addr & 0xff000000) >> 24);
+	printf("IP FUNCTION",ip);
 	return ip;
 }
 
