@@ -286,7 +286,7 @@ void *handle_client(void *arg)
 							char buff_out2[BUFFER_SZ];
 							sprintf(buff_out2, "Chat privado %s -> %s\n", msg->sender, msg->message);
 							printf("Chat Privado %s hacia %s -> %s\n", msg->sender,msg->recipient, msg->message);
-							send_private_message(buff_out2, cli->uid,msg->sender);
+							send_private_message(buff_out2, cli->uid,msg->recipient);
 						}
 						// Free the unpacked message
 						chat__message_communication__free_unpacked(msg, NULL);
