@@ -368,6 +368,7 @@ void *handle_client(void *arg)
 			strcpy(cli->name, user->username);
 			sprintf(buff_out, "%s has joined\n", cli->name);
 			printf("%s", buff_out);
+			sendSuccessServerResponse("Welcome to the chat!",cli,1);
 			broadcast_message(buff_out, cli);
 		}
 	}
