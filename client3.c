@@ -66,9 +66,11 @@ void broadcast_message() {
 	char buffer[LENGTH + 32] = {};
   printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
   str_overwrite_stdout();
-  scanf("%s", &message);
-  // str_trim_lf(message, LENGTH);
-  printf("%s", &message);
+  fgets(message, LENGTH, stdin);
+  str_trim_lf(message, LENGTH);
+
+  printf(" & %s", &message);
+  printf("Sin & %s", message);
   Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
   Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
   void *buf;                     // Buffer to store serialized data
