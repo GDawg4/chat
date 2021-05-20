@@ -308,7 +308,7 @@ void *handle_client(void *arg)
 
 				// Read packed message from standard-input.
 				// Unpack the message using protobuf-c.
-
+				printf('a');
 				cli_ptn = chat__client_petition__unpack(NULL, strlen(buff_out), buff_out);
 
 				int option = (cli_ptn->option);
