@@ -224,7 +224,7 @@ void change_user_status(client_t *client , char *status , char *username)
 				
 				strcpy(clients[i]->status, status);
 				
-				//sendSuccessServerResponse("Status changed succesfully.",client,3);
+				sendSuccessServerResponse("Status changed succesfully.",client,3);
 				
 				printf("Status %s \n",clients[i]->status);
 				printf("User %s \n",clients[i]->name);
