@@ -147,7 +147,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 			
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
 					{
-						// sendFailureServerResponse("Error sending broadcast message.", client_sender);
+						sendFailureServerResponse("Error sending broadcast message.", client_sender);
 						break;
 					}
 				
@@ -156,7 +156,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 		}
 	}
 	pthread_mutex_unlock(&clients_mutex);
-	// sendSuccessServerResponse("Message sent succesfully", client_sender);
+	sendSuccessServerResponse("Message sent succesfully", client_sender);
 }
 
 void sendSuccessServerResponse(char *succces_message, client_t *client_sender)
