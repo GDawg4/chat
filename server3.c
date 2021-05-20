@@ -123,12 +123,14 @@ void queue_remove(int uid)
 void broadcast_message(char *msg_string, client_t *client_sender)
 {
 	pthread_mutex_lock(&clients_mutex);
-
+	// printf("Chat General %s -> %s\n", msg.sender, msg.message);
+	printf("LLego aqui4");	
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
+		printf("LLego aqui3");
 		if (clients[i])
 		{
-			printf("LLego aqui");
+			printf("LLego aqui2");
 			if (clients[i]->uid != client_sender->uid)
 			{
 				printf("LLego aqui");
@@ -152,7 +154,7 @@ void broadcast_message(char *msg_string, client_t *client_sender)
 					}else{
 						printf("Chat General %s -> %s\n", msg.sender, msg.message);
 					}
-				printf("Chat General %s -> %s\n", msg.sender, msg.message);	
+				
 				free(buf);
 			}
 		}
