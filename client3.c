@@ -99,6 +99,7 @@ void broadcast_message()
 
     if (strcmp(message, "exit") == 0)
     {
+        printf('exit');
         return;
     }
     else
