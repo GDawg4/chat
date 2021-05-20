@@ -31,9 +31,9 @@ void str_trim_lf(char *arr, int length)
     int i;
     for (i = 0; i < length; i++)
     { // trim \n
-        if (arr[i] == '\n')
+        if (arr[i] == "\n")
         {
-            arr[i] = '\0';
+            arr[i] = "\0";
             break;
         }
     }
@@ -169,7 +169,6 @@ void change_status()
     printf("1. activo\n");
     printf("2. inactivo\n");
     printf("3. ocupado\n");
-    str_overwrite_stdout();
     scanf("%d", &choice_status);
 
     switch (choice_status)

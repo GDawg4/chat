@@ -39,19 +39,6 @@ void str_overwrite_stdout()
 	fflush(stdout);
 }
 
-void str_trim_lf(char *arr, int length)
-{
-	int i;
-	for (i = 0; i < length; i++)
-	{ // trim \n
-		if (arr[i] == '\n')
-		{
-			arr[i] = ' ';
-			//   break;
-		}
-	}
-}
-
 // char* get_ip(struct sockaddr_in addr)
 // {
 
@@ -465,9 +452,8 @@ void *handle_client(void *arg)
 					
 					
 						
-						char buff_out3[BUFFER_SZ];
-						sprintf(buff_out3, "Hola a todos\n");
-						broadcast_message(buff_out3,cli);
+						printf("Client s %s\n", cli_ptn->change->status);
+						printf("Client u %s\n", cli_ptn->change->username);
 						
 						break;
 					case 4:
