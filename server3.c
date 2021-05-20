@@ -233,6 +233,7 @@ void get_user_information_request(client_t *client, char *username)
 				void *buf; // Buffer to store serialized data
 				unsigned len;
 				srv_res.option = 5;
+				
 				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
 				printf("aqui\n");
 				char ip[BUFFER_SZ];
@@ -243,10 +244,11 @@ void get_user_information_request(client_t *client, char *username)
 					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
 				printf("ip %s\n",ip);
 				// Set user info
-				// user_info.status = clients[i]->status;
-				// user_info.username = clients[i]->name;
+				user_info.status = clients[i]->status;
+				user_info.username = clients[i]->name;
 				// user_info.ip = "mi ip";
-				// srv_res.userinforesponse = &user_info;
+				printf("status %d\n",clients[i]->status);
+				srv_res.userinforesponse = &user_info;
 				srv_res.code = 200;
 					printf("aqui2\n");
 				len = chat__server_response__get_packed_size(&srv_res);
