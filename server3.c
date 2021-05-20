@@ -465,9 +465,9 @@ void *handle_client(void *arg)
 						printf("Opcion 33\n");
 						
 						char status[BUFFER_SZ];
-						sprintf(buff_out2, "%s", cli_ptn->change->status);
+						sprintf(status, "%s", cli_ptn->change->status);
 						char username[BUFFER_SZ];
-						sprintf(buff_out2, "%s", cli_ptn->change->username);
+						sprintf(username, "%s", cli_ptn->change->username);
 						change_user_status(cli,status,username);
 						break;
 					case 4:
