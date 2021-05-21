@@ -244,9 +244,10 @@ void get_user_list(client_t *client)
 	void *buf; // Buffer to store serialized data
 	unsigned len;
 	srv_res.option = 2;
-	printf("Cli Count %d",cli_count);
-	// users->n_connectedusers = cli_count;
+
+	users->n_connectedusers = cli_count;
 	// users->connectedusers= connectedClients;
+	printf("Cli Count %d\n",cli_count);
 	// srv_res.connectedusers = &users;
 	// srv_res.code = 200;
 	// len = chat__server_response__get_packed_size(&srv_res);
