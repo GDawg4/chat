@@ -489,7 +489,7 @@ void *handle_client_inactive(void*arg){
 	while(1){
 		clock_t difference = clock() - cli->last_connection;
 		msec = difference * 1000 / CLOCKS_PER_SEC;
-		if(msec > trigger && cli->status_changed_last_connection==0){
+		if(msec > trigger && cli->status_changed_last_connection==0 && strcmp(cli->status,"inactivo")!=0){
 			cli->status_changed_last_connection=1;
 			change_user_status(cli, "inactivo", cli->name,1);
 		};
