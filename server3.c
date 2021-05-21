@@ -215,7 +215,7 @@ void get_user_list(client_t *client)
 	pthread_mutex_lock(&clients_mutex);
 	
 	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
-	Chat__ConnectedUsersResponse *users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
+	Chat__ConnectedUsersResponse users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
 	Chat__UserInfo **connectedClients;
 	int j = 0;
 	connectedClients = malloc (sizeof (Chat__UserInfo*) * (cli_count));
@@ -245,8 +245,8 @@ void get_user_list(client_t *client)
 	unsigned len;
 	srv_res.option = 2;
 
-	users->n_connectedusers = 4;
-	// users->connectedusers= connectedClients;
+	users->n_connectedusers = cli_count;
+	users->connectedusers= connectedClients;
 	printf("Cli Count %d\n",cli_count);
 	// srv_res.connectedusers = &users;
 	// srv_res.code = 200;
