@@ -20,6 +20,8 @@
 static _Atomic unsigned int cli_count = 0;
 static int uid = 10;
 
+//trigger inactivity timer
+int trigger = 10000; /* 10ms */
 /* Client structure */
 typedef struct
 {
@@ -483,7 +485,7 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 
 void *handle_client_inactive(void*arg){
 	client_t *cli = (client_t *)arg;
-	int msec = 0, trigger = 10000; /* 10ms */
+	int msec = 0; 
 	while(1){
 		clock_t difference = clock() - cli->last_connection;
 		msec = difference * 1000 / CLOCKS_PER_SEC;
