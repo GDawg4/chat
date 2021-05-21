@@ -705,7 +705,7 @@ int main(int argc, char **argv)
 	pthread_t tid2;
 
 	//When server is closed
-	signal(SIGINT, catch_ctrl_c_and_exit);
+	// signal(SIGINT, catch_ctrl_c_and_exit);
 
 	//Setting of socket
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -714,7 +714,7 @@ int main(int argc, char **argv)
 	serv_addr.sin_port = htons(port);
 
 	//Ignore pipe signals
-	// signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 
 	//Set Sockets
 	if (setsockopt(listenfd, SOL_SOCKET, (SO_REUSEPORT | SO_REUSEADDR), (char *)&option, sizeof(option)) < 0)
@@ -769,7 +769,7 @@ int main(int argc, char **argv)
 		//Reduce CPU usage
 		sleep(1);
 	}
-
+	catch_ctrl_c_and_exit(2);
 	if (flag)
 	{
 		close_server();
