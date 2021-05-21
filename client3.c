@@ -10,22 +10,53 @@
 #include <pthread.h>
 #include <netdb.h>
 #include "new.pb-c.h"
-// #include "amessage.pb-c.h"
+
+// -------------------------------------------------------------------------- //
+//                                 CHAT CLIENT                                //
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+// Sistemas Operativos 				                                          //
+// Universidad del Valle de Guatemala                                         //
+// Silvio Orozco 18282				                                          //
+// Jose Castañeda 18161                                                       //
+// Rodrigo Garoz 18102   			                                          //
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+// Chat realizado en C con multithreading y uso de protobuf                   //
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+// Para correr el server realizar los siguientes comandos                     //
+// Primero instalar protobuf-c https://github.com/protobuf-c/                 //
+// sudo make Makefile compile								                  //
+// ./server3 port							                                  //
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+// Para correr el client realizar los siguientes comandos                     //
+// Primero instalar protobuf-c https://github.com/protobuf-c/                 //
+// sudo make Makefile compile								                  //
+// ./client3 serverIP port					                                  //
+// -------------------------------------------------------------------------- //
+// With help of https://github.com/nikhilroxtomar/Chatroom-in-C               //
+// -------------------------------------------------------------------------- //
+
+
+// Global variables
 #define MAX_MSG_SIZE 1024
 #define BUFFER_SZ 2048 * 24
 #define LENGTH 2048
-
-// Global variables
 volatile sig_atomic_t flag = 0;
 int sockfd = 0;
 char name[32];
 struct hostent *host;
+
+//Print ">" into input
 void str_overwrite_stdout()
 {
     printf("%s", "> ");
     fflush(stdout);
 }
 
+//Remove line breaks
 void str_trim_lf(char *arr, int length)
 {
     int i;
@@ -39,38 +70,13 @@ void str_trim_lf(char *arr, int length)
     }
 }
 
+//Set flag exit
 void catch_ctrl_c_and_exit(int sig)
 {
     flag = 1;
 }
 
-void send_msg_handler()
-{
-    char message[LENGTH] = {};
-    char buffer[LENGTH + 32] = {};
-
-    while (1)
-    {
-        str_overwrite_stdout();
-        fgets(message, LENGTH, stdin);
-        str_trim_lf(message, LENGTH);
-
-        if (strcmp(message, "exit") == 0)
-        {
-            break;
-        }
-        else
-        {
-            sprintf(buffer, "%s: %s\n", name, message);
-            send(sockfd, buffer, strlen(buffer), 0);
-        }
-
-        bzero(message, LENGTH);
-        bzero(buffer, LENGTH + 32);
-    }
-    catch_ctrl_c_and_exit(2);
-}
-
+//Broadcast message sender function
 void broadcast_message()
 {
     char message[LENGTH] = {};
@@ -81,37 +87,42 @@ void broadcast_message()
     str_overwrite_stdout();
     scanf("%[^\n]", &message);
 
+    //Protobuf structures init
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
-    Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
-    void *buf;                                                          // Buffer to store serialized data
-    unsigned len;                   
-    
+    Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; 
+    void *buf;                                                          
+    unsigned len;      
+
+    //Set information
     msg.message = message;
     msg.recipient = "everyone";
     msg.sender = name;
-
     cli_ptn.messagecommunication = &msg;
     cli_ptn.option = 4;
 
+    //Pack client petition
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
 
+    //If message = "exit" return to menu
     if (strcmp(message, "exit") == 0)
     {
         return;
     }
     else
     {
+        //Othewise send protobuf package to server
         send(sockfd, buf, len, 0);
     }
 
-    free(buf); // Free the allocated serialized buffer
-
+    //Free the allocated serialized buffer
+    free(buf);
     bzero(message, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
+//Private message to specific user sender function
 void private_message()
 {
     char message[LENGTH] = {};
@@ -120,44 +131,48 @@ void private_message()
     char temp;
     scanf("%c", &temp);
     printf("Ingresa el nombre del usuario a quien deseas enviarle el mensaje.\n");
+    str_overwrite_stdout();
     scanf("%[^\n]", &user_name);
     scanf("%c", &temp);
     printf("Ingresa tu mensaje o 'exit' para volver al menú principal.\n");
     str_overwrite_stdout();
     scanf("%[^\n]", &message);
 
+    //Protobuf structures init
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;                 
-    
+    //Set information
     msg.message = message;
     msg.recipient = user_name;
     msg.sender = name;
-
     cli_ptn.messagecommunication = &msg;
     cli_ptn.option = 4;
 
+    //Pack client petition
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
 
+    //If message = "exit" return to menu
     if (strcmp(message, "exit") == 0)
     {
         return;
     }
     else
     {
+        //Othewise send protobuf package to server
         send(sockfd, buf, len, 0);
     }
 
-    free(buf); // Free the allocated serialized buffer
-
+    // Free the allocated serialized buffer
+    free(buf); 
     bzero(message, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
-
+//Change Status Function
 void change_status()
 {
     int choice_status;
@@ -169,6 +184,7 @@ void change_status()
     printf("1. activo\n");
     printf("2. inactivo\n");
     printf("3. ocupado\n");
+    str_overwrite_stdout();
     scanf("%d", &choice_status);
 
     switch (choice_status)
@@ -187,53 +203,58 @@ void change_status()
         return;
     }
 
+    //Protobuf structures init
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__ChangeStatus new_status = CHAT__CHANGE_STATUS__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
-    unsigned len;              
+    unsigned len;  
 
+    //Set information
     new_status.status = status;
     new_status.username = name;
-
     cli_ptn.option = 3;
     cli_ptn.change = &new_status;
     
+    //Pack client petition
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
+
+    //Send protobuf package to server
     send(sockfd, buf, len, 0);
 
-
-    free(buf); // Free the allocated serialized buffer
-
+    // Free the allocated serialized buffer
+    free(buf); 
     bzero(buffer, LENGTH + 32);
 }
 
+//Get user list from server function
 void user_list()
 {
     
-
+    //Protobuf structures init
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;                 
-
+    //Set information
     user_request.user = "everyone";
-
     cli_ptn.users = &user_request;
     cli_ptn.option = 2;
 
+    //Pack client petition
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
 
+    //Send protobuf package to server
     send(sockfd, buf, len, 0);
 
-    free(buf); // Free the allocated serialized buffer
-
-
+    // Free the allocated serialized buffer
+    free(buf);
 }
 
+//Get specific user information from server
 void user_information()
 {
     char user_name[LENGTH] = {};
@@ -241,12 +262,15 @@ void user_information()
     char temp;
     scanf("%c", &temp);
     printf("Ingresa el nombre del usuario de quien deseas ver la información.\n");
+    str_overwrite_stdout();
     scanf("%[^\n]", &user_name);
 
+    //Protobuf structures init
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
-    unsigned len;                
+    unsigned len;   
+    //Set information             
     user_request.user = user_name;
 
     cli_ptn.users = &user_request;
@@ -255,29 +279,32 @@ void user_information()
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
-
+    
+    //If message = "exit" return to menu
     if (strcmp(user_name, "exit") == 0)
     {
         return;
     }
     else
     {
+        //Othewise send protobuf package to server
         send(sockfd, buf, len, 0);
     }
 
-    free(buf); // Free the allocated serialized buffer
-
+    // Free the allocated serialized buffer
+    free(buf); 
     bzero(user_name, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
+//Client Menu Handler function
 void client_menu_handler()
 {
 
     while (flag == 0)
     {
         int choice;
-
+        //Print Menu
         printf("\nMenu:\n");
         printf("1. Chatear con odos los usuarios (broadcasting).\n");
         printf("2. Enviar mensajes directos, privados, aparte del chat general.\n");
@@ -287,32 +314,40 @@ void client_menu_handler()
         printf("6. Ayuda.\n");
         printf("7. Salir.\n");
         scanf("%d", &choice);
-
+        
         switch (choice)
         {
         case 1:
+            //Send Broadcast Message
             broadcast_message();
             break;
         case 2:
+            //Send Private Message
             private_message();
             break;
         case 3:
+            //Change user status in the server 
             change_status();
             break;
         case 4:
+            //Get connected user lis from server
             user_list();
             break;
         case 5:
+            //Get user information from server
             user_information();
             break;
         case 6:
-            printf("Este es un mensaje de ayuda.\n");
+            //Help Message
+            printf("Este es un chat generado con C y Protobuf para comunicarte por medio de\nun servidor con tus amigos. A continuación se te mostrará las funciones \nque puedes realizar en el chat. Para salir del chat ingresa la opción 7.\n");
             break;
         case 7:
-            printf("Gracias por usar el chat!\n");
+            //Exit form menu
+            printf("¡Gracias por usar el chat!\n");
             catch_ctrl_c_and_exit(2);
             break;
         default:
+            //Error message
             printf("Wrong Choice. Enter again\n");
             break;
         }
@@ -329,15 +364,19 @@ void recv_msg_handler()
         int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
         if (receive > 0)
         {
+            
+            //Protobuf structures init
             Chat__ServerResponse *server_res;
             Chat__MessageCommunication *msg;
             Chat__UserInfo *user_info;
             Chat__ConnectedUsersResponse *connected_user_info;
 
+            //Unpack server response
             server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
             //Get Response Code
             int code = server_res->code;
+            //Get response option
             int option = (server_res->option);
             if (option!=0)
             {
@@ -437,10 +476,11 @@ void recv_msg_handler()
         }
         else
         {
-            // -1
+            break;
         }
+        
+        //Free buffer
         bzero(buff_out, BUFFER_SZ);
-        // memset(message, 0, sizeof(message));
     }
 }
 
@@ -448,63 +488,70 @@ int main(int argc, char **argv)
 {
     if (argc != 3)
     {
-        printf("Usage: %s <port>\n", argv[0]);
+        //Args error message   
+        printf("Para ejecutar el programa ingresa ./client3 <serverIP> <port>\nDentro del programa se te solicitara tu nombre de usuario.", argv[0]);
         return EXIT_FAILURE;
     }
 
     host = gethostbyname(argv[1]);
     if (!host)
     {
-        fprintf(stderr, "%s: error: unknown host %s\n", argv[0], argv[1]);
+        fprintf(stderr, "%s: error: Host desconocido: %s\n", argv[0], argv[1]);
         return -4;
     }
     int port = atoi(argv[2]);
 
     signal(SIGINT, catch_ctrl_c_and_exit);
 
-    printf("Please enter your name: ");
+    //Get user name
+    printf("Ingresa tu nombre de usuario: ");
+    str_overwrite_stdout();
     fgets(name, 32, stdin);
     str_trim_lf(name, strlen(name));
 
     if (strlen(name) > 32 || strlen(name) < 2)
     {
-        printf("Name must be less than 30 and more than 2 characters.\n");
+        //Error Message
+        printf("El nombre del usuario tiene que ser entre 2 y 30 caracteres.\n");
         return EXIT_FAILURE;
     }
 
+    //Socket Init
     struct sockaddr_in server_addr;
 
-    /* Socket settings */
+    //Socket settings
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     server_addr.sin_family = AF_INET;
-
     server_addr.sin_port = htons(port);
-
     memcpy(&server_addr.sin_addr, host->h_addr_list[0], host->h_length);
-    // Connect to Server
+    //Connect to Server
     int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (err == -1)
     {
-        printf("ERROR: connect\n");
+        //Connection Error Message
+        printf("Error de conexión con el servidor.\n");
         return EXIT_FAILURE;
     }
 
+    //Set client ip
     char *ip_client;
     ip_client = "3.142.76.26";
     
 
-     //Create User Registration
+    //Create Protobuf User Registration
     Chat__ClientPetition cli_ptn_register = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRegistration user = CHAT__USER_REGISTRATION__INIT; 
     void *buf;                                                          
     unsigned len;              
     
+    //Set user information
     user.username = name;
     user.ip = ip_client;
  
     cli_ptn_register.option = 1;
     cli_ptn_register.registration = &user;
     
+    //Pack protobuf petition
     len = chat__client_petition__get_packed_size(&cli_ptn_register);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn_register, buf);
@@ -513,19 +560,24 @@ int main(int argc, char **argv)
     send(sockfd, buf, len, 0);
 
     char buff_out[BUFFER_SZ];
+    //Wait for server response
     int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
     if (receive > 0)
     {
+        //Init Protobuf Server Response
         Chat__ServerResponse *server_res;
         Chat__MessageCommunication *msg;
 
+        //Unpack Protobuf Server Response
         server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
         //Get Response Code
         int code = server_res->code;
+        //Get Response Option
         int option = (server_res->option);
         if (code == 200 && option == 1)
         {
+            //Print Success Message
             printf("%s\n", server_res->servermessage);   
         }
         else
@@ -543,18 +595,19 @@ int main(int argc, char **argv)
     bzero(buff_out, BUFFER_SZ);
 
 
-
+    //Create client menu handler thread
     pthread_t send_msg_thread;
     if (pthread_create(&send_msg_thread, NULL, (void *)client_menu_handler, NULL) != 0)
     {
-        printf("ERROR: pthread\n");
+        printf("Error al crear el thread.\n");
         return EXIT_FAILURE;
     }
 
+    //Create client recieve message from server handler thread
     pthread_t recv_msg_thread;
     if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
     {
-        printf("ERROR: pthread\n");
+        printf("Error al crear el thread.\n");
         return EXIT_FAILURE;
     }
 
@@ -562,12 +615,15 @@ int main(int argc, char **argv)
     {
         if (flag)
         {
-            printf("\nBye\n");
+            //Goodbye Message
+            printf("\n¡Hasta Pronto!\n");
             break;
         }
     }
 
+    //Close socket
     close(sockfd);
 
+    //Exit Program
     return EXIT_SUCCESS;
 }
