@@ -317,7 +317,7 @@ void get_user_information_request(client_t *client, char *username)
 	send_failure_response("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
 }
 /* Change User Status*/
-void change_user_status(client_t *client, char *status, char *username)
+void change_user_status(client_t *client, char *status, char *username,int inactive)
 {
 
 	pthread_mutex_lock(&clients_mutex);
@@ -332,7 +332,12 @@ void change_user_status(client_t *client, char *status, char *username)
 				strcpy(clients[i]->status, status);
 
 				pthread_mutex_unlock(&clients_mutex);
-				sendSuccessServerResponse("Status changed succesfully.", client, 3);
+				if(inactive==0){
+					sendSuccessServerResponse("Status cambiado éxitosamente.\n", client, 3);
+				}else{
+					sendSuccessServerResponse("Tu status ha cambiado a inactivo por tu inactividad.\n", client, 3);
+				}
+				
 				pthread_mutex_lock(&clients_mutex);
 
 				//send message to everyone that someone changed status
@@ -484,7 +489,7 @@ void *handle_client_inactive(void*arg){
 		msec = difference * 1000 / CLOCKS_PER_SEC;
 		if(msec > trigger && cli->status_changed_last_connection==0){
 			cli->status_changed_last_connection=1;
-			change_user_status(cli, "inactivo", cli->name);
+			change_user_status(cli, "inactivo", cli->name,1);
 		};
 	}
 }
@@ -587,7 +592,7 @@ void *handle_client(void *arg)
 					get_user_list(cli);
 					break;
 				case 3:
-					change_user_status(cli, cli_ptn->change->status, cli_ptn->change->username);
+					change_user_status(cli, cli_ptn->change->status, cli_ptn->change->username,0);
 					break;
 				case 4:
 
