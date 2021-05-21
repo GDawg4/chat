@@ -331,7 +331,7 @@ void recv_msg_handler()
         {
             Chat__ServerResponse *server_res;
             Chat__MessageCommunication *msg;
-            Chat__UserInfo *user_info;
+            Chat__UserInfo **user_info;
             Chat__ConnectedUsersResponse *connected_user_info;
 
             server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
@@ -350,25 +350,25 @@ void recv_msg_handler()
                 //Connected Users Response
                 case 2:
                     printf("Regreso algo\n");
-                    printf("Lo que viene %s\n",buff_out);
-                    // connected_user_info = server_res->connectedusers;
-                    // if (code == 200)
-                    // {
-                    //     for (int i = 0; i < connected_user_info->n_connectedusers; ++i)
-                    //     {
-                    //         if (connected_user_info->connectedusers[i])
-                    //         {
-                    //             user_info = connected_user_info->connectedusers[i];                                
-                    //             printf("Usuario: %s \nStatus: %s\nIP: %s\n", user_info->username, user_info->status, user_info->ip);
-                    //         }
-                    //     }
+                    // printf("Lo que viene %s\n",buff_out);
+                    connected_user_info = server_res->connectedusers;
+                    if (code == 200)
+                    {
+                        for (int i = 0; i < connected_user_info->n_connectedusers; ++i)
+                        {
+                            if (connected_user_info->connectedusers[i])
+                            {
+                                user_info = connected_user_info->connectedusers[i];                                
+                                printf("Usuario: %s \nStatus: %s\nIP: %s\n", user_info->username, user_info->status, user_info->ip);
+                            }
+                        }
                         
-                    // }
-                    // else if (code == 500)
-                    // {
-                    //     //Print Error Message
-                    //     printf("%s\n", server_res->servermessage);
-                    // }
+                    }
+                    else if (code == 500)
+                    {
+                        //Print Error Message
+                        printf("%s\n", server_res->servermessage);
+                    }
                     break;
                 //Change Status Response
                 case 3:
