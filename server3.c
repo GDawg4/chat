@@ -222,7 +222,7 @@ void get_user_list(client_t *client)
 	{
 		if (clients[i])
 		{	
-			prinf("Client Name %s\n",clients[i]->name);
+			printf("Client Name %s\n",clients[i]->name);
 			// Chat__UserInfo *user;
 			
 			// char ip[BUFFER_SZ];
