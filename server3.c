@@ -213,12 +213,7 @@ void get_user_list(client_t *client)
 {
 
 	pthread_mutex_lock(&clients_mutex);
-	if (strcmp("everyone", username) != 0)
-	{
-		pthread_mutex_unlock(&clients_mutex);
-		send_failure_response('No se ha enviado everyone para recibir los usuarios conectados.\n', client, 2);
-		return;
-	}
+	
 	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 	Chat__ConnectedUsersResponse *users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
 	Chat__UserInfo *connectedClients[cli_count];
