@@ -331,7 +331,7 @@ void recv_msg_handler()
         {
             Chat__ServerResponse *server_res;
             Chat__MessageCommunication *msg;
-            Chat__UserInfo **user_info;
+            Chat__UserInfo *user_info;
             Chat__ConnectedUsersResponse *connected_user_info;
 
             server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
@@ -354,12 +354,12 @@ void recv_msg_handler()
                     connected_user_info = server_res->connectedusers;
                     if (code == 200)
                     {
+                       printf("Usuarios: \n");
                         for (int i = 0; i < connected_user_info->n_connectedusers; ++i)
                         {
                             if (connected_user_info->connectedusers[i])
                             {
-                                user_info = connected_user_info->connectedusers[i];                                
-                                printf("Usuario: %s \nStatus: %s\nIP: %s\n", user_info->username, user_info->status, user_info->ip);
+                                printf("\t%d. Usuario: %s \n\tStatus: %s\n\tIP: %s\n", i,connected_user_info->connectedusers[i]->username, connected_user_info->connectedusers[i]->status, connected_user_info->connectedusers[i]->ip);
                             }
                         }
                         
@@ -400,7 +400,8 @@ void recv_msg_handler()
                     user_info = server_res->userinforesponse;
                      if (code == 200)
                     {
-                        printf("Usuario: %s \nStatus: %s\nIP: %s\n", user_info->username, user_info->status, user_info->ip);
+                        printf("Infof de usuario:\n");
+                        printf("\tUsuario: %s \n\tStatus: %s\n\tIP: %s\n", user_info->username, user_info->status, user_info->ip);
                     }
                     else if (code == 500)
                     {
