@@ -489,7 +489,7 @@ int main(int argc, char **argv)
     if (argc != 3)
     {
         //Args error message   
-        printf("Para ejecutar el programa ingresa ./client3 <serverIP> <port>\nDentro del programa se te solicitara tu nombre de usuario.", argv[0]);
+        printf("Para ejecutar el programa ingresa ./client3 <serverIP> <port>\nDentro del programa se te solicitara tu nombre de usuario.\n", argv[0]);
         return EXIT_FAILURE;
     }
 
