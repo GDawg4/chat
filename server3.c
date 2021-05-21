@@ -557,7 +557,7 @@ void *handle_client(void *arg)
 			
 			if (strlen(buff_out) > 0)
 			{
-				before = clock();
+				// before = clock();
 				statusChangedClock=0;
 				//str_trim_lf(buff_out, strlen(buff_out));
 
