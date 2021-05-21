@@ -568,7 +568,9 @@ void *handle_client(void *arg)
 				switch (option)
 				{
 				//Repeat code of register a client
-				case 1:					
+				case 1:	
+					printf("Esta opcion no debería estar contemplada en esta parte.");
+					break;				
 					if (leave_flag == 0 && (strlen(cli_ptn->registration->username) < 2 || strlen(cli_ptn->registration->username) >= 32 - 1))
 					{
 						send_server_failure_response("Error. El nombre debe estar entre 2 y 32 caracteres..\n", cli, 1);
