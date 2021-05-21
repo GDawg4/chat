@@ -26,6 +26,8 @@ typedef struct
 	struct sockaddr_in address;
 	int sockfd;
 	int uid;
+	clock_t last_connection;
+	int status_changed_last_connection;
 	char status[32];
 	char name[32];
 } client_t;
@@ -70,6 +72,8 @@ void str_trim_lf(char *arr, int length)
 void queue_add(client_t *cl)
 {
 	strcpy(cl->status, "activo");
+	cl->last_connection = clock();
+	cl->status_changed_last_connection = 0;
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -472,6 +476,18 @@ int check_is_ip_available_in_clients(int uid, struct sockaddr_in addr)
 	return 1;
 }
 
+void *handle_client_inactive(void*arg){
+	client_t *cli = (client_t *)arg;
+	int msec = 0, trigger = 1000; /* 10ms */
+	while(1){
+		clock_t difference = clock() - cli->last_connection;
+		msec = difference * 1000 / CLOCKS_PER_SEC;
+		if(msec > trigger && cli->status_changed_last_connection==0){
+			cli->status_changed_last_connection=1;
+			change_user_status(cli, "inactivo", cli->name);
+		};
+	}
+}
 /* Handle all communication with the client */
 void *handle_client(void *arg)
 {
@@ -536,29 +552,23 @@ void *handle_client(void *arg)
 	}
 
 	bzero(buff_out, BUFFER_SZ);
-	int msec = 0, trigger = 1000; /* 10ms */
-	clock_t before = clock();
-	int statusChangedClock = 0;
+
 	while (1)
 	{
 		if (leave_flag)
 		{
 			break;
 		}
-		clock_t difference = clock() - before;
-		msec = difference * 1000 / CLOCKS_PER_SEC;
-		if(msec > trigger && statusChangedClock==0){
-			statusChangedClock=1;
-			change_user_status(cli, "inactivo", cli->name);
-		}
+	
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0)
 		{
 			
 			if (strlen(buff_out) > 0)
-			{
-				// before = clock();
-				statusChangedClock=0;
+			{	
+				//Update client last connection
+				cli->last_connection = clock();
+				cli->status_changed_last_connection = 0;
 				//str_trim_lf(buff_out, strlen(buff_out));
 
 				Chat__ClientPetition *cli_ptn;
@@ -657,6 +667,7 @@ int main(int argc, char **argv)
 	struct sockaddr_in serv_addr;
 	struct sockaddr_in cli_addr;
 	pthread_t tid;
+	pthread_t tid2;
 
 	/* Socket settings */
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -714,6 +725,8 @@ int main(int argc, char **argv)
 		/* Add client to the queue and fork thread */
 		queue_add(cli);
 		pthread_create(&tid, NULL, &handle_client, (void *)cli);
+		pthread_create(&tid2, NULL, &handle_client_inactive, (void *)cli);
+
 
 		/* Reduce CPU usage */
 		sleep(1);
