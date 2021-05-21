@@ -233,7 +233,7 @@ void get_user_list(client_t *client)
 			user->status = client->status;
 			user->username = client->name;
 			user->ip = ip;
-			connectedClients[j] = &user;
+			connectedClients[j] = user;
 			j=j+1;
 			free(ip);
 		}
@@ -564,7 +564,7 @@ void *handle_client(void *arg)
 				{
 				case 2:
 					printf("Option 2\n");
-					// get_user_list(cli);
+					get_user_list(cli);
 					break;
 				case 3:
 					change_user_status(cli, cli_ptn->change->status, cli_ptn->change->username);
