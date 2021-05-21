@@ -714,7 +714,7 @@ int main(int argc, char **argv)
 	serv_addr.sin_port = htons(port);
 
 	//Ignore pipe signals
-	signal(SIGPIPE, SIG_IGN);
+	// signal(SIGPIPE, SIG_IGN);
 
 	//Set Sockets
 	if (setsockopt(listenfd, SOL_SOCKET, (SO_REUSEPORT | SO_REUSEADDR), (char *)&option, sizeof(option)) < 0)
