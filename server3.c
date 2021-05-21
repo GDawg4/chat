@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include "new.pb-c.h"
+#include <time.h>
 #define MAX_MSG_SIZE 1024
 // #include "amessage.pb-c.h"
 
@@ -535,20 +536,29 @@ void *handle_client(void *arg)
 	}
 
 	bzero(buff_out, BUFFER_SZ);
-
+	int msec = 0, trigger = 1000; /* 10ms */
+	clock_t before = clock();
+	int statusChangedClock = 0;
 	while (1)
 	{
 		if (leave_flag)
 		{
 			break;
 		}
-
+		clock_t difference = clock() - before;
+		msec = difference * 1000 / CLOCKS_PER_SEC;
+		if(msec > trigger && statusChangedClock==0){
+			statusChangedClock=1;
+			change_user_status(cli, "inactivo", cli->name);
+		}
 		int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 		if (receive > 0)
 		{
+			
 			if (strlen(buff_out) > 0)
 			{
-
+				before = clock();
+				statusChangedClock=0;
 				//str_trim_lf(buff_out, strlen(buff_out));
 
 				Chat__ClientPetition *cli_ptn;
