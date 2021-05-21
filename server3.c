@@ -216,47 +216,41 @@ void get_user_list(client_t *client)
 	
 	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 	Chat__ConnectedUsersResponse *users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
-	Chat__UserInfo *connectedClients[cli_count];
+	Chat__UserInfo **connectedClients;
 	int j = 0;
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
 		{	
 			printf("Client Name %s\n",clients[i]->name);
-			// Chat__UserInfo *user;
-			
-			// char ip[BUFFER_SZ];
-			// sprintf(ip, "%d.%d.%d.%d",
-			// clients[i]->address.sin_addr.s_addr & 0xff,
-			// (clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
-			// (clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
-			// (clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-			// user->status = client->status;
-			// user->username = client->name;
-			// user->ip = ip;
-			// connectedClients[j] = user;
-			// j=j+1;
-			// free(ip);
+			connectedClients[j] = malloc (sizeof (Chat__UserInfo));
+    		chat__user_info__init(connectedClients[j]);		
+			char ip[BUFFER_SZ];
+			sprintf(ip, "%d.%d.%d.%d",
+			clients[i]->address.sin_addr.s_addr & 0xff,
+			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+			connectedClients[j]->ip  = ip;
+			connectedClients[j]->status = clients[i]->status;
+			connectedClients[j]->username = clients[i]->name;
+			j=j+1;
+			free(ip);
 		}
 	}
-	// void *buf; // Buffer to store serialized data
-	// unsigned len;
-	// srv_res.option = 2;
-
-	// users->n_connectedusers = cli_count;
-	// users->connectedusers=&connectedClients;
-	// srv_res.connectedusers = &users;
-	// srv_res.code = 200;
-	// len = chat__server_response__get_packed_size(&srv_res);
-	// buf = malloc(len);
-	// chat__server_response__pack(&srv_res, buf);
-	// send(client->sockfd, buf, len, 0);
-	// pthread_mutex_unlock(&clients_mutex);
-	// free(buf);
-	// return;
+	void *buf; // Buffer to store serialized data
+	unsigned len;
+	srv_res.option = 2;
+	users->n_connectedusers = cli_count;
+	users->connectedusers=connectedClients;
+	srv_res.connectedusers = &users;
+	srv_res.code = 200;
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(client->sockfd, buf, len, 0);
 	pthread_mutex_unlock(&clients_mutex);
-
-	// send_failure_response("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
+	free(buf);
 }
 
 /* Get User Information Request*/
