@@ -345,12 +345,19 @@ void recv_msg_handler()
                 {
                 //User Register Response
                 case 1:
-                    printf("2\n");
+                    if (code == 200)
+                    {
+                        printf("%s\n", server_res->servermessage);   
+                    }
+                    else
+                    {
+                        //Print Error Message
+                        printf("%s\n", server_res->servermessage);
+                        return EXIT_FAILURE;
+                    }
                     break;
                 //Connected Users Response
                 case 2:
-                    printf("Regreso algo\n");
-                    // printf("Lo que viene %s\n",buff_out);
                     connected_user_info = server_res->connectedusers;
                     if (code == 200)
                     {

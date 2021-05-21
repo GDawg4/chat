@@ -527,9 +527,9 @@ void *handle_client(void *arg)
 		if (leave_flag == 0)
 		{
 			strcpy(cli->name, user->username);
-			sprintf(buff_out, "%s has joined\n", cli->name);
+			sprintf(buff_out, "%s se ha unido\n", cli->name);
 			printf("%s", buff_out);
-			sendSuccessServerResponse("***** WELCOME TO THE C CHAT ***** \n", cli, 1);
+			sendSuccessServerResponse("***** BIENVENIDO AL CHAT DE C ***** \n", cli, 1);
 			broadcast_message(buff_out, cli);
 		}
 	}
