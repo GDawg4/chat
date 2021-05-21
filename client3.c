@@ -306,7 +306,7 @@ void client_menu_handler()
         int choice;
         //Print Menu
         printf("\nMenu:\n");
-        printf("1. Chatear con odos los usuarios (broadcasting).\n");
+        printf("1. Chatear con todos los usuarios (broadcasting).\n");
         printf("2. Enviar mensajes directos, privados, aparte del chat general.\n");
         printf("3. Cambiar de status.\n");
         printf("4. Listar los usuarios conectados al sistema de chat.\n");
