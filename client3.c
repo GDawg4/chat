@@ -211,14 +211,14 @@ void change_status()
 
 void user_list()
 {
-    char *user_name = "everyone";
+    
 
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
     unsigned len;                 
 
-    user_request.user = user_name;
+    user_request.user = "everyone";
 
     cli_ptn.users = &user_request;
     cli_ptn.option = 2;
@@ -231,7 +231,7 @@ void user_list()
 
     free(buf); // Free the allocated serialized buffer
 
-    bzero(user_name, LENGTH);
+
 }
 
 void user_information()
