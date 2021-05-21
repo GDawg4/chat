@@ -245,8 +245,8 @@ void get_user_list(client_t *client)
 	unsigned len;
 	srv_res.option = 2;
 	users->n_connectedusers = cli_count;
-	users->connectedusers=connectedClients;
-	// srv_res.connectedusers = &users;
+	users->connectedusers=&connectedClients;
+	srv_res.connectedusers = &users;
 	srv_res.code = 200;
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
