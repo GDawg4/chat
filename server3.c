@@ -245,8 +245,8 @@ void get_user_list(client_t *client)
 	unsigned len;
 	srv_res.option = 2;
 
-	users->n_connectedusers = cli_count;
-	// users->connectedusers= connectedClients;
+	// users->n_connectedusers = cli_count;
+	users->connectedusers= connectedClients;
 	printf("Cli Count %d\n",cli_count);
 	// srv_res.connectedusers = &users;
 	// srv_res.code = 200;
