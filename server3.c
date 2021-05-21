@@ -218,6 +218,7 @@ void get_user_list(client_t *client)
 	Chat__ConnectedUsersResponse *users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
 	Chat__UserInfo **connectedClients;
 	int j = 0;
+	connectedClients = malloc (sizeof (Chat__UserInfo*) * (cli_count));
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
@@ -231,9 +232,9 @@ void get_user_list(client_t *client)
 			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
 			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
 			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-			connectedClients[j]->ip  = ip;
-			connectedClients[j]->status = clients[i]->status;
-			connectedClients[j]->username = clients[i]->name;
+			// connectedClients[j]->ip  = ip;
+			// connectedClients[j]->status = clients[i]->status;
+			// connectedClients[j]->username = clients[i]->name;
 			j=j+1;
 			free(ip);
 		}
