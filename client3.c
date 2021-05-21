@@ -212,7 +212,6 @@ void change_status()
 void user_list()
 {
     char *user_name = "everyone";
-    char buffer[LENGTH + 32] = {};
 
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
@@ -233,7 +232,6 @@ void user_list()
     free(buf); // Free the allocated serialized buffer
 
     bzero(user_name, LENGTH);
-    bzero(buffer, LENGTH + 32);
 }
 
 void user_information()

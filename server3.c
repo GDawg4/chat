@@ -563,7 +563,8 @@ void *handle_client(void *arg)
 				switch (option)
 				{
 				case 2:
-					get_user_list(cli);
+					printf("Option 2\n");
+					// get_user_list(cli);
 					break;
 				case 3:
 					change_user_status(cli, cli_ptn->change->status, cli_ptn->change->username);
