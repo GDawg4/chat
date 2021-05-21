@@ -232,11 +232,11 @@ void get_user_list(client_t *client)
 			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
 			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
 			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-			// connectedClients[j]->ip  = ip;
-			// connectedClients[j]->status = clients[i]->status;
-			// connectedClients[j]->username = clients[i]->name;
+			connectedClients[j]->ip  = ip;
+			connectedClients[j]->status = clients[i]->status;
+			connectedClients[j]->username = clients[i]->name;
 			j=j+1;
-			free(ip);
+			
 		}
 	}
 	printf("LLego aqui\n");
