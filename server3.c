@@ -220,9 +220,9 @@ void get_user_list(client_t *client)
 		return;
 	}
 	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
-	Chat__ConnectedUsersResponse **users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
+	Chat__ConnectedUsersResponse *users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
 	Chat__UserInfo *connectedClients[cli_count];
-	j = 0;
+	int j = 0;
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
@@ -247,8 +247,8 @@ void get_user_list(client_t *client)
 	unsigned len;
 	srv_res.option = 2;
 
-	
-	users.connectedusers=&connectedClients;
+	users->n_connectedusers = cli_count;
+	users->connectedusers=&connectedClients;
 	srv_res.connectedusers = &users;
 	srv_res.code = 200;
 	len = chat__server_response__get_packed_size(&srv_res);
