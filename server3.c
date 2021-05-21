@@ -235,9 +235,9 @@ void get_user_list(client_t *client)
 			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
 			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
 			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-			user.status = client->status;
-			user.username = client->name;
-			user.ip = ip;
+			user->status = client->status;
+			user->username = client->name;
+			user->ip = ip;
 			connectedClients[j] = &user;
 			j=j+1;
 			free(ip);
