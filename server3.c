@@ -227,7 +227,7 @@ void get_user_list(client_t *client)
 	{
 		if (clients[i])
 		{
-			Chat__UserInfo user;
+			Chat__UserInfo *user;
 			
 			char ip[BUFFER_SZ];
 			sprintf(ip, "%d.%d.%d.%d",
@@ -238,7 +238,7 @@ void get_user_list(client_t *client)
 			user.status = client->status;
 			user.username = client->name;
 			user.ip = ip;
-			connectedClients[j] = user;
+			connectedClients[j] = &user;
 			j=j+1;
 			free(ip);
 		}
