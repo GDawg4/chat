@@ -84,8 +84,8 @@ void broadcast_message()
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
-    unsigned len;                                                       // Length of serialized data
-    // printf("%s\n", message);
+    unsigned len;                   
+    
     msg.message = message;
     msg.recipient = "everyone";
     msg.sender = name;
@@ -129,8 +129,8 @@ void private_message()
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__MessageCommunication msg = CHAT__MESSAGE_COMMUNICATION__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
-    unsigned len;                                                       // Length of serialized data
-    // printf("%s\n", message);
+    unsigned len;                 
+    
     msg.message = message;
     msg.recipient = user_name;
     msg.sender = name;
@@ -197,8 +197,7 @@ void change_status()
 
     cli_ptn.option = 3;
     cli_ptn.change = &new_status;
-    //printf("New Status %s\n",cli_ptn.change->status);
-    //printf("New Name %s\n",cli_ptn.change->username);
+    
     len = chat__client_petition__get_packed_size(&cli_ptn);
     buf = malloc(len);
     chat__client_petition__pack(&cli_ptn, buf);
@@ -207,6 +206,33 @@ void change_status()
 
     free(buf); // Free the allocated serialized buffer
 
+    bzero(buffer, LENGTH + 32);
+}
+
+void user_list()
+{
+    char *user_name = "everyone";
+    char buffer[LENGTH + 32] = {};
+
+    Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
+    Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
+    void *buf;                                                          // Buffer to store serialized data
+    unsigned len;                 
+
+    user_request.user = user_name;
+
+    cli_ptn.users = &user_request;
+    cli_ptn.option = 2;
+
+    len = chat__client_petition__get_packed_size(&cli_ptn);
+    buf = malloc(len);
+    chat__client_petition__pack(&cli_ptn, buf);
+
+    send(sockfd, buf, len, 0);
+
+    free(buf); // Free the allocated serialized buffer
+
+    bzero(user_name, LENGTH);
     bzero(buffer, LENGTH + 32);
 }
 
@@ -222,8 +248,7 @@ void user_information()
     Chat__ClientPetition cli_ptn = CHAT__CLIENT_PETITION__INIT;
     Chat__UserRequest user_request = CHAT__USER_REQUEST__INIT; // AMessage
     void *buf;                                                          // Buffer to store serialized data
-    unsigned len;                                                       // Length of serialized data
-    // printf("%s\n", message);
+    unsigned len;                
     user_request.user = user_name;
 
     cli_ptn.users = &user_request;
@@ -277,13 +302,13 @@ void client_menu_handler()
             change_status();
             break;
         case 4:
-            
+            user_list();
             break;
         case 5:
             user_information();
             break;
         case 6:
-            printf("6\n");
+            printf("Este es un mensaje de ayuda.\n");
             break;
         case 7:
             printf("Gracias por usar el chat!\n");
@@ -309,6 +334,7 @@ void recv_msg_handler()
             Chat__ServerResponse *server_res;
             Chat__MessageCommunication *msg;
             Chat__UserInfo *user_info;
+            Chat__ConnectedUsersResponse *connected_user_info;
 
             server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
@@ -323,9 +349,26 @@ void recv_msg_handler()
                 case 1:
                     printf("2\n");
                     break;
-                //Connected User Response
+                //Connected Users Response
                 case 2:
-                    printf("2\n");
+                    connected_user_info = server_res->connectedusers;
+                    if (code == 200)
+                    {
+                        for (int i = 0; i < connected_user_info->n_connectedusers; ++i)
+                        {
+                            if (connected_user_info->connectedusers[i])
+                            {
+                                user_info = connected_user_info->connectedusers[i];                                
+                                printf("Usuario: %s \nStatus: %s\nIP: %s\n", user_info->username, user_info->status, user_info->ip);
+                            }
+                        }
+                        
+                    }
+                    else if (code == 500)
+                    {
+                        //Print Error Message
+                        printf("%s\n", server_res->servermessage);
+                    }
                     break;
                 //Change Status Response
                 case 3:
@@ -447,9 +490,7 @@ int main(int argc, char **argv)
     Chat__UserRegistration user = CHAT__USER_REGISTRATION__INIT; 
     void *buf;                                                          
     unsigned len;              
-    // Chat__UserRegistration user = &user;
-    // strcpy(user->username, name);
-    // strcpy(user->ip, ipBuffer);
+    
     user.username = name;
     user.ip = ip_client;
  
