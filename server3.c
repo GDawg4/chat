@@ -247,13 +247,13 @@ void get_user_list(client_t *client)
 
 	users.n_connectedusers = cli_count;
 	users.connectedusers= connectedClients;
-	printf("Cli Count %d\n",cli_count);
-	// srv_res.connectedusers = &users;
-	// srv_res.code = 200;
-	// len = chat__server_response__get_packed_size(&srv_res);
-	// buf = malloc(len);
-	// chat__server_response__pack(&srv_res, buf);
-	// send(client->sockfd, buf, len, 0);
+
+	srv_res.connectedusers = users;
+	srv_res.code = 200;
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(client->sockfd, buf, len, 0);
 	pthread_mutex_unlock(&clients_mutex);
 	free(buf);
 }
