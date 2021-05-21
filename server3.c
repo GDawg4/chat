@@ -208,6 +208,60 @@ void send_failure_response(char *failure_message, client_t *client_sender, int o
 	pthread_mutex_unlock(&clients_mutex);
 }
 
+/* Get User Information List*/
+void get_user_list(client_t *client)
+{
+
+	pthread_mutex_lock(&clients_mutex);
+	if (strcmp("everyone", username) != 0)
+	{
+		pthread_mutex_unlock(&clients_mutex);
+		send_failure_response('No se ha enviado everyone para recibir los usuarios conectados.\n', client, 2);
+		return;
+	}
+	Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
+	Chat__ConnectedUsersResponse **users = CHAT__CONNECTED_USERS_RESPONSE__INIT;
+	Chat__UserInfo *connectedClients[cli_count];
+	j = 0;
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
+			Chat__UserInfo user;
+			
+			char ip[BUFFER_SZ];
+			sprintf(ip, "%d.%d.%d.%d",
+			clients[i]->address.sin_addr.s_addr & 0xff,
+			(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+			(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+			(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+			user.status = client->status;
+			user.username = client->name;
+			user.ip = ip;
+			connectedClients[j] = user;
+			j=j+1;
+			free(ip);
+		}
+	}
+	void *buf; // Buffer to store serialized data
+	unsigned len;
+	srv_res.option = 2;
+
+	
+	users.connectedusers=&connectedClients;
+	srv_res.connectedusers = &users;
+	srv_res.code = 200;
+	len = chat__server_response__get_packed_size(&srv_res);
+	buf = malloc(len);
+	chat__server_response__pack(&srv_res, buf);
+	send(client->sockfd, buf, len, 0);
+	pthread_mutex_unlock(&clients_mutex);
+	free(buf);
+	return;
+	pthread_mutex_unlock(&clients_mutex);
+
+	// send_failure_response("No existe ningun usuario con ese nombre conectado al chat.", client, 5);
+}
 
 /* Get User Information Request*/
 void get_user_information_request(client_t *client, char *username)
@@ -215,9 +269,10 @@ void get_user_information_request(client_t *client, char *username)
 
 	pthread_mutex_lock(&clients_mutex);
 	// printf("Username %s\n",username);
-	if(strcmp("everyone",username)==0){
+	if (strcmp("everyone", username) == 0)
+	{
 		pthread_mutex_unlock(&clients_mutex);
-		send_failure_response('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n',client,5);
+		send_failure_response('Para consultar todos los usuarios debes hacerlo en la opción correcta.\n', client, 5);
 		return;
 	}
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -227,26 +282,24 @@ void get_user_information_request(client_t *client, char *username)
 			if (strcmp(clients[i]->name, username) == 0)
 			{
 
-				
-
 				Chat__ServerResponse srv_res = CHAT__SERVER_RESPONSE__INIT;
 				void *buf; // Buffer to store serialized data
 				unsigned len;
 				srv_res.option = 5;
-				
+
 				Chat__UserInfo user_info = CHAT__USER_INFO__INIT; // AMessage
 				char ip[BUFFER_SZ];
 				sprintf(ip, "%d.%d.%d.%d",
-					clients[i]->address.sin_addr.s_addr & 0xff,
-					(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
-					(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
-					(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
-				
+						clients[i]->address.sin_addr.s_addr & 0xff,
+						(clients[i]->address.sin_addr.s_addr & 0xff00) >> 8,
+						(clients[i]->address.sin_addr.s_addr & 0xff0000) >> 16,
+						(clients[i]->address.sin_addr.s_addr & 0xff000000) >> 24);
+
 				// Set user info
 				user_info.status = clients[i]->status;
 				user_info.username = clients[i]->name;
 				user_info.ip = ip;
-			
+
 				srv_res.userinforesponse = &user_info;
 				srv_res.code = 200;
 				len = chat__server_response__get_packed_size(&srv_res);
@@ -256,7 +309,6 @@ void get_user_information_request(client_t *client, char *username)
 				pthread_mutex_unlock(&clients_mutex);
 				free(buf);
 				return;
-				
 			}
 		}
 	}
@@ -325,7 +377,7 @@ void send_private_message(char *msg_string, client_t *client_sender, char *recei
 				chat__server_response__pack(&srv_res, buf);
 
 				if (send(clients[i]->sockfd, buf, len, 0) < 0)
-				{	
+				{
 					pthread_mutex_unlock(&clients_mutex);
 					send_failure_response("Error sending broadcast message. User is no longer connected", client_sender, 0);
 					pthread_mutex_unlock(&clients_mutex);
@@ -369,7 +421,7 @@ void return_response_to_sender(char *s, int uid)
 }
 
 int check_is_name_available_in_clients(char *name, int uid)
-{	
+{
 	pthread_mutex_lock(&clients_mutex);
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -437,7 +489,7 @@ void *handle_client(void *arg)
 	// int receive = recv(cli->sockfd, buff_out, BUFFER_SZ, 0);
 	if (recv(cli->sockfd, buff_out, BUFFER_SZ, 0) <= 0)
 	{
-		
+
 		send_failure_response("Error sending message in client.\n", cli, 1);
 		leave_flag = 1;
 	}
@@ -457,11 +509,11 @@ void *handle_client(void *arg)
 		send_failure_response("Name must be between 2 and 32 characters.\n", cli, 1);
 		leave_flag = 1;
 	}
-	
+
 	else
 	{
-		
-		if (strcmp(user->username,"everyone")==0)
+
+		if (strcmp(user->username, "everyone") == 0)
 		{
 			send_failure_response("El nombre everyone se encuentra reservado. Utiliza otro nombre.\n", cli, 1);
 			leave_flag = 1;
@@ -515,11 +567,8 @@ void *handle_client(void *arg)
 
 				switch (option)
 				{
-				case 1:
-					// broadcast_message();
-					break;
 				case 2:
-
+					get_user_list(cli);
 					break;
 				case 3:
 					change_user_status(cli, cli_ptn->change->status, cli_ptn->change->username);
