@@ -440,7 +440,7 @@ void close_server()
 	{
 		if (clients[i])
 		{
-			close(cli->sockfd);
+			close(clients[i]->sockfd);
 		}
 	}
 }
