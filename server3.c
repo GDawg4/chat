@@ -223,7 +223,7 @@ void get_user_list(client_t *client)
 	{
 		if (clients[i])
 		{	
-			printf("Client Name %s\n",clients[i]->name);
+			
 			connectedClients[j] = malloc (sizeof (Chat__UserInfo));
     		chat__user_info__init(connectedClients[j]);		
 			char ip[BUFFER_SZ];
@@ -235,6 +235,7 @@ void get_user_list(client_t *client)
 			connectedClients[j]->ip  = ip;
 			connectedClients[j]->status = clients[i]->status;
 			connectedClients[j]->username = clients[i]->name;
+			printf("Client Name %s\n",connectedClients[i]->username);
 			j=j+1;
 			
 		}
@@ -245,7 +246,7 @@ void get_user_list(client_t *client)
 	srv_res.option = 2;
 	users->n_connectedusers = cli_count;
 	users->connectedusers=connectedClients;
-	srv_res.connectedusers = &users;
+	// srv_res.connectedusers = &users;
 	srv_res.code = 200;
 	len = chat__server_response__get_packed_size(&srv_res);
 	buf = malloc(len);
