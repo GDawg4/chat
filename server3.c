@@ -51,6 +51,13 @@ static int client_id = 10;
 //Trigger inactivity timer
 int trigger_inactivity_timer = 10000; /* 10ms */
 
+volatile sig_atomic_t flag = 0;
+//Set flag exit and close everyone
+void catch_ctrl_c_and_exit(int sig)
+{
+	flag = 1;
+}
+
 //Client Structure
 typedef struct
 {
@@ -426,6 +433,17 @@ int check_is_name_available_in_clients(char *name, int client_id)
 	return 1;
 }
 
+//Close clients when server is closed
+void close_server()
+{
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
+			close(cli->sockfd);
+		}
+	}
+}
 //Check if IP is avaialable in clients
 int check_is_ip_available_in_clients(int client_id, struct sockaddr_in addr)
 {
@@ -568,9 +586,9 @@ void *handle_client(void *arg)
 				switch (option)
 				{
 				//Repeat code of register a client
-				case 1:	
+				case 1:
 					printf("Esta opcion no debería estar contemplada en esta parte.");
-					break;				
+					break;
 					if (leave_flag == 0 && (strlen(cli_ptn->registration->username) < 2 || strlen(cli_ptn->registration->username) >= 32 - 1))
 					{
 						send_server_failure_response("Error. El nombre debe estar entre 2 y 32 caracteres..\n", cli, 1);
@@ -686,6 +704,9 @@ int main(int argc, char **argv)
 	pthread_t tid;
 	pthread_t tid2;
 
+	//When server is closed
+	signal(SIGINT, catch_ctrl_c_and_exit);
+
 	//Setting of socket
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 	serv_addr.sin_family = AF_INET;
@@ -749,5 +770,9 @@ int main(int argc, char **argv)
 		sleep(1);
 	}
 
+	if (flag)
+	{
+		close_server();
+	}
 	return EXIT_SUCCESS;
 }
