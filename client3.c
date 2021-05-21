@@ -354,12 +354,12 @@ void recv_msg_handler()
                     connected_user_info = server_res->connectedusers;
                     if (code == 200)
                     {
-                       printf("Usuarios: \n");
+                        printf("Listado de Usuarios: \n");
                         for (int i = 0; i < connected_user_info->n_connectedusers; ++i)
                         {
                             if (connected_user_info->connectedusers[i])
                             {
-                                printf("\t%d. Usuario: %s \n\tStatus: %s\n\tIP: %s\n", i,connected_user_info->connectedusers[i]->username, connected_user_info->connectedusers[i]->status, connected_user_info->connectedusers[i]->ip);
+                                printf("\t%d. Usuario: %s \n\tStatus: %s\n\tIP: %s\n", (i+1),connected_user_info->connectedusers[i]->username, connected_user_info->connectedusers[i]->status, connected_user_info->connectedusers[i]->ip);
                             }
                         }
                         
