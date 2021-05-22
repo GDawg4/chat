@@ -434,7 +434,7 @@ void recv_msg_handler()
 
                     if (strcmp(msg->recipient, "everyone") == 0)
                     {
-                        printf("Chat General enviado por %s -> %s\n", msg->sender, msg->message);
+                        printf("Chat General enviado: %s\n", msg->message);
                     }
                     else
                     {
