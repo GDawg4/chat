@@ -575,7 +575,7 @@ int main(int argc, char **argv)
         int code = server_res->code;
         //Get Response Option
         int option = (server_res->option);
-        if (code == 200 && option == 1)
+        if (code == 200)
         {
             //Print Success Message
             printf("%s\n", server_res->servermessage);   
