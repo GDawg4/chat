@@ -584,7 +584,7 @@ int main(int argc, char **argv)
         {
             //Print Error Message
             printf("%s\n", server_res->servermessage);
-            return EXIT_FAILURE;
+            //return EXIT_FAILURE;
         }
     }
     else
