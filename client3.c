@@ -561,38 +561,38 @@ int main(int argc, char **argv)
 
     char buff_out[BUFFER_SZ];
     //Wait for server response
-    int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
-    if (receive > 0)
-    {
-        //Init Protobuf Server Response
-        Chat__ServerResponse *server_res;
-        Chat__MessageCommunication *msg;
+    // int receive = recv(sockfd, buff_out, BUFFER_SZ, 0);
+    // if (receive > 0)
+    // {
+    //     //Init Protobuf Server Response
+    //     Chat__ServerResponse *server_res;
+    //     Chat__MessageCommunication *msg;
 
-        //Unpack Protobuf Server Response
-        server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
+    //     //Unpack Protobuf Server Response
+    //     server_res = chat__server_response__unpack(NULL, strlen(buff_out), buff_out);
 
-        //Get Response Code
-        int code = server_res->code;
-        //Get Response Option
-        int option = (server_res->option);
-        if (code == 200)
-        {
-            //Print Success Message
-            printf("%s\n", server_res->servermessage);   
-        }
-        else
-        {
-            //Print Error Message
-            printf("%s\n", server_res->servermessage);
-            //return EXIT_FAILURE;
-        }
-    }
-    else
-    {
-        return EXIT_FAILURE;
-    }
+    //     //Get Response Code
+    //     int code = server_res->code;
+    //     //Get Response Option
+    //     int option = (server_res->option);
+    //     if (code == 200)
+    //     {
+    //         //Print Success Message
+    //         printf("%s\n", server_res->servermessage);   
+    //     }
+    //     else
+    //     {
+    //         //Print Error Message
+    //         printf("%s\n", server_res->servermessage);
+    //         //return EXIT_FAILURE;
+    //     }
+    // }
+    // else
+    // {
+    //     return EXIT_FAILURE;
+    // }
 
-    bzero(buff_out, BUFFER_SZ);
+    // bzero(buff_out, BUFFER_SZ);
 
 
     //Create client menu handler thread
